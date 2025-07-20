@@ -10,6 +10,8 @@ import com.respiroc.ledger.domain.model.Voucher
 import com.respiroc.ledger.domain.repository.PostingRepository
 import com.respiroc.ledger.domain.repository.VoucherRepository
 import com.respiroc.util.context.ContextAwareApi
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -116,6 +118,28 @@ class VoucherService(
     @Transactional(readOnly = true)
     fun findVoucherById(id: Long): Voucher? {
         return voucherRepository.findByIdAndTenantIdWithPostings(id, tenantId())
+    }
+
+    @Transactional(readOnly = true)
+    fun findVouchersWithPagination(
+        tenantId: Long,
+        pageRequest: Pageable,
+        search: String?,
+        startDate: String?,
+        endDate: String?
+    ): Page<VoucherSummaryPayload> {
+        val parsedStartDate = startDate?.let { LocalDate.parse(it) }
+        val parsedEndDate = endDate?.let { LocalDate.parse(it) }
+        
+        val vouchersPage = voucherRepository.findVouchersWithPagination(
+            tenantId = tenantId,
+            search = search,
+            startDate = parsedStartDate,
+            endDate = parsedEndDate,
+            pageRequest = pageRequest
+        )
+        
+        return vouchersPage.map { voucher -> toVoucherSummary(voucher) }
     }
 
     // -------------------------------

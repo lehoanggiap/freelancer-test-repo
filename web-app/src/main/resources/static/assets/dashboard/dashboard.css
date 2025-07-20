@@ -1,0 +1,252 @@
+/* Dashboard Widget Styles */
+.r-financial-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: var(--wa-border-radius-m);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid var(--wa-color-neutral-200);
+}
+
+.r-financial-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--wa-shadow-l);
+}
+
+.r-financial-card.r-revenue {
+    border-left: 4px solid var(--wa-color-success-500);
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.r-financial-card.r-expense {
+    border-left: 4px solid var(--wa-color-danger-500);
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.r-financial-card.r-profit {
+    border-left: 4px solid var(--wa-color-success-500);
+    background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.r-financial-card.r-loss {
+    border-left: 4px solid var(--wa-color-danger-500);
+    background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+.r-financial-card.r-equity {
+    border-left: 4px solid var(--wa-color-info-500);
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+/* Enhanced Chart Container - Fixed targeting */
+wa-card .r-chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: var(--wa-border-radius-m);
+    padding: var(--wa-space-m);
+    border: 1px solid var(--wa-color-neutral-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Accounts Table - Fixed targeting */
+wa-card .r-accounts-table {
+    max-height: 250px;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: var(--wa-border-radius-m);
+    border: 1px solid var(--wa-color-neutral-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin: var(--wa-space-s);
+}
+
+.r-accounts-table::-webkit-scrollbar {
+    width: 6px;
+}
+
+.r-accounts-table::-webkit-scrollbar-track {
+    background: var(--wa-color-neutral-100);
+    border-radius: 3px;
+}
+
+.r-accounts-table::-webkit-scrollbar-thumb {
+    background: var(--wa-color-neutral-300);
+    border-radius: 3px;
+}
+
+.r-accounts-table::-webkit-scrollbar-thumb:hover {
+    background: var(--wa-color-neutral-400);
+}
+
+.r-account-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--wa-space-m);
+    border-bottom: 1px solid var(--wa-color-neutral-200);
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.r-account-row:hover {
+    background: linear-gradient(135deg, var(--wa-color-neutral-50) 0%, var(--wa-color-neutral-100) 100%);
+    transform: translateX(4px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.r-account-row:last-child {
+    border-bottom: none;
+}
+
+.r-account-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wa-space-xs);
+    flex: 1;
+}
+
+.r-account-info .wa-body-s {
+    color: var(--wa-color-neutral-600);
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+
+.r-account-info .wa-body-m {
+    color: var(--wa-color-neutral-900);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Enhanced Card Headers */
+wa-card[appearance="outlined"] > div[slot="header"] {
+    background: linear-gradient(135deg, var(--wa-color-neutral-50) 0%, var(--wa-color-neutral-100) 100%);
+    border-bottom: 1px solid var(--wa-color-neutral-200);
+    padding: var(--wa-space-m);
+    border-radius: var(--wa-border-radius-m) var(--wa-border-radius-m) 0 0;
+}
+
+/* Chart.js Customization */
+.r-chart-container canvas {
+    border-radius: var(--wa-border-radius-s);
+    background: transparent;
+}
+
+/* Chart.js Specific Styling */
+.r-chart-container .chartjs-tooltip {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-radius: var(--wa-border-radius-s) !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    color: white !important;
+    font-family: inherit !important;
+    font-size: 0.875rem !important;
+    padding: var(--wa-space-s) !important;
+}
+
+.r-chart-container .chartjs-legend {
+    display: flex !important;
+    justify-content: center !important;
+    gap: var(--wa-space-m) !important;
+    margin-top: var(--wa-space-s) !important;
+    flex-wrap: wrap !important;
+}
+
+.r-chart-container .chartjs-legend-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--wa-space-xs) !important;
+    font-size: 0.875rem !important;
+    color: var(--wa-color-neutral-700) !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.r-chart-container .chartjs-legend-item:hover {
+    opacity: 0.7 !important;
+}
+
+.r-chart-container .chartjs-legend-item.chartjs-legend-hidden {
+    opacity: 0.3 !important;
+}
+
+/* Empty State Styling */
+.r-accounts-table .wa-text-center {
+    padding: var(--wa-space-xl);
+    color: var(--wa-color-neutral-500);
+    font-style: italic;
+    background: linear-gradient(135deg, var(--wa-color-neutral-50) 0%, var(--wa-color-neutral-100) 100%);
+    border-radius: var(--wa-border-radius-s);
+    margin: var(--wa-space-m);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    wa-card .r-chart-container {
+        height: 280px;
+        padding: var(--wa-space-s);
+    }
+    
+    wa-card .r-accounts-table {
+        max-height: 200px;
+    }
+    
+    .r-account-row {
+        padding: var(--wa-space-s);
+    }
+}
+
+/* Loading States */
+.r-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.r-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--wa-color-neutral-300);
+    border-top: 2px solid var(--wa-color-brand-500);
+    border-radius: 50%;
+    animation: r-spin 1s linear infinite;
+}
+
+@keyframes r-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Accessibility */
+.r-financial-card:focus-within {
+    outline: 2px solid var(--wa-color-brand-500);
+    outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .r-financial-card {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border-color: var(--wa-color-neutral-700);
+    }
+    
+    wa-card .r-chart-container {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border-color: var(--wa-color-neutral-700);
+    }
+    
+    wa-card .r-accounts-table {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border-color: var(--wa-color-neutral-700);
+    }
+    
+    .r-account-row:hover {
+        background: linear-gradient(135deg, var(--wa-color-neutral-800) 0%, var(--wa-color-neutral-900) 100%);
+    }
+    
+    .r-account-row {
+        border-color: var(--wa-color-neutral-700);
+    }
+} 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <link rel="stylesheet" th:href="@{/assets/dashboard/dashboard.css}">
+</head>
+
+<body>
+<main layout:fragment="content">
+    <div class="wa-stack wa-gap-l">
+        <!-- Period Selector -->
+        <div class="wa-cluster wa-gap-m">
+            <h1 class="wa-heading-l">Financial Dashboard</h1>
+            <wa-dropdown>
+                <wa-button slot="trigger" size="small" variant="brand" appearance="outlined" with-caret>
+                    <span th:text="${selectedPeriod == 'current_month' ? 'Current Month' : selectedPeriod == 'previous_month' ? 'Previous Month' : 'Current Year'}">Period</span>
+                </wa-button>
+                <wa-dropdown-item th:href="@{/dashboard(period='current_month')}" th:classappend="${selectedPeriod == 'current_month'} ? 'wa-selected' : ''">
+                    Current Month
+                </wa-dropdown-item>
+                <wa-dropdown-item th:href="@{/dashboard(period='previous_month')}" th:classappend="${selectedPeriod == 'previous_month'} ? 'wa-selected' : ''">
+                    Previous Month
+                </wa-dropdown-item>
+                <wa-dropdown-item th:href="@{/dashboard(period='current_year')}" th:classappend="${selectedPeriod == 'current_year'} ? 'wa-selected' : ''">
+                    Current Year
+                </wa-dropdown-item>
+            </wa-dropdown>
+        </div>
+
+        <!-- Financial Summary Cards -->
+        <div class="wa-grid wa-grid-cols-1 wa-grid-cols-2-desktop wa-grid-cols-4-desktop-xl wa-gap-m">
+            <!-- Revenue Card -->
+            <wa-card appearance="outlined" class="r-financial-card r-revenue">
+                <div class="wa-stack wa-gap-s">
+                    <div class="wa-cluster wa-gap-s">
+                        <wa-icon name="trending-up" variant="regular" class="wa-text-success"></wa-icon>
+                        <span class="wa-heading-s">Revenue</span>
+                    </div>
+                    <div class="wa-heading-l wa-text-success" th:text="${#numbers.formatDecimal(financialSummary.revenue, 1, 2)}">0</div>
+                    <span class="wa-body-s wa-text-muted">Period: <span th:text="${#temporals.format(financialSummary.startDate, 'MMM yyyy')}">Period</span></span>
+                </div>
+            </wa-card>
+
+            <!-- Expenses Card -->
+            <wa-card appearance="outlined" class="r-financial-card r-expense">
+                <div class="wa-stack wa-gap-s">
+                    <div class="wa-cluster wa-gap-s">
+                        <wa-icon name="trending-down" variant="regular" class="wa-text-danger"></wa-icon>
+                        <span class="wa-heading-s">Expenses</span>
+                    </div>
+                    <div class="wa-heading-l wa-text-danger" th:text="${#numbers.formatDecimal(financialSummary.expenses, 1, 2)}">0</div>
+                    <span class="wa-body-s wa-text-muted">Period: <span th:text="${#temporals.format(financialSummary.startDate, 'MMM yyyy')}">Period</span></span>
+                </div>
+            </wa-card>
+
+            <!-- Net Income Card -->
+            <wa-card appearance="outlined" class="r-financial-card" th:classappend="${financialSummary.netIncome >= 0} ? 'r-profit' : 'r-loss'">
+                <div class="wa-stack wa-gap-s">
+                    <div class="wa-cluster wa-gap-s">
+                        <wa-icon th:name="${financialSummary.netIncome >= 0} ? 'arrow-up' : 'arrow-down'" variant="regular" th:class="${financialSummary.netIncome >= 0} ? 'wa-text-success' : 'wa-text-danger'"></wa-icon>
+                        <span class="wa-heading-s">Net Income</span>
+                    </div>
+                    <div class="wa-heading-l" th:class="${financialSummary.netIncome >= 0} ? 'wa-text-success' : 'wa-text-danger'" th:text="${#numbers.formatDecimal(financialSummary.netIncome, 1, 2)}">0</div>
+                    <span class="wa-body-s wa-text-muted">Period: <span th:text="${#temporals.format(financialSummary.startDate, 'MMM yyyy')}">Period</span></span>
+                </div>
+            </wa-card>
+
+            <!-- Equity Card -->
+            <wa-card appearance="outlined" class="r-financial-card r-equity">
+                <div class="wa-stack wa-gap-s">
+                    <div class="wa-cluster wa-gap-s">
+                        <wa-icon name="chart-line" variant="regular" class="wa-text-info"></wa-icon>
+                        <span class="wa-heading-s">Equity</span>
+                    </div>
+                    <div class="wa-heading-l wa-text-info" th:text="${#numbers.formatDecimal(financialSummary.equity, 1, 2)}">0</div>
+                    <span class="wa-body-s wa-text-muted">Period: <span th:text="${#temporals.format(financialSummary.startDate, 'MMM yyyy')}">Period</span></span>
+                </div>
+            </wa-card>
+        </div>
+
+        <!-- Charts and Tables Section -->
+        <div class="wa-grid wa-grid-cols-1 wa-grid-cols-2-desktop wa-gap-l">
+            <!-- Monthly Trends Chart -->
+            <wa-card appearance="outlined">
+                <div slot="header" class="wa-cluster wa-gap-s">
+                    <wa-icon name="chart-line" variant="regular"></wa-icon>
+                    <span class="wa-heading-s">Monthly Trends</span>
+                </div>
+                <div class="r-chart-container">
+                    <canvas id="monthlyTrendsChart" width="400" height="200"></canvas>
+                    <div id="chartFallback" class="wa-text-center wa-text-muted wa-padding-m" style="display: none;">
+                        No chart data available
+                    </div>
+                </div>
+            </wa-card>
+
+            <!-- Top Accounts Tables -->
+            <div class="wa-stack wa-gap-m">
+                <!-- Top Revenue Accounts -->
+                <wa-card appearance="outlined">
+                    <div slot="header" class="wa-cluster wa-gap-s">
+                        <wa-icon name="trending-up" variant="regular" class="wa-text-success"></wa-icon>
+                        <span class="wa-heading-s">Top Revenue Accounts</span>
+                    </div>
+                    <div class="r-accounts-table">
+                        <div th:each="account : ${topRevenueAccounts}" class="r-account-row">
+                            <div class="r-account-info">
+                                <span class="wa-body-s wa-text-muted" th:text="${account.accountNumber}">Account</span>
+                                <span class="wa-body-m" th:text="${account.accountName}">Account Name</span>
+                            </div>
+                            <span class="wa-body-m wa-text-success" th:text="${#numbers.formatDecimal(account.amount, 1, 2)}">0</span>
+                        </div>
+                        <div th:if="${#lists.isEmpty(topRevenueAccounts)}" class="wa-text-center wa-text-muted wa-padding-m">
+                            No revenue data available
+                        </div>
+                    </div>
+                </wa-card>
+
+                <!-- Top Expense Accounts -->
+                <wa-card appearance="outlined">
+                    <div slot="header" class="wa-cluster wa-gap-s">
+                        <wa-icon name="trending-down" variant="regular" class="wa-text-danger"></wa-icon>
+                        <span class="wa-heading-s">Top Expense Accounts</span>
+                    </div>
+                    <div class="r-accounts-table">
+                        <div th:each="account : ${topExpenseAccounts}" class="r-account-row">
+                            <div class="r-account-info">
+                                <span class="wa-body-s wa-text-muted" th:text="${account.accountNumber}">Account</span>
+                                <span class="wa-body-m" th:text="${account.accountName}">Account Name</span>
+                            </div>
+                            <span class="wa-body-m wa-text-danger" th:text="${#numbers.formatDecimal(account.amount, 1, 2)}">0</span>
+                        </div>
+                        <div th:if="${#lists.isEmpty(topExpenseAccounts)}" class="wa-text-center wa-text-muted wa-padding-m">
+                            No expense data available
+                        </div>
+                    </div>
+                </wa-card>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Scripts fragment -->
+<th:block layout:fragment="scripts">
+    <!-- Pass data to JavaScript -->
+    <script th:inline="javascript">
+        // Make data available to external JS file
+        window.monthlyTrendsData = /*[[${monthlyTrends}]]*/ [];
+        console.log('Data passed to JavaScript:', window.monthlyTrendsData);
+    </script>
+    
+    <!-- External dashboard JavaScript -->
+    <script th:src="@{/assets/dashboard/dashboard.js}"></script>
+</th:block> 

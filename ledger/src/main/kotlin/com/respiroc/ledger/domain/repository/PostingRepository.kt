@@ -119,4 +119,58 @@ interface PostingRepository : CustomJpaRepository<Posting, Long> {
         @Param("startDate") startDate: LocalDate,
         @Param("endDate") endDate: LocalDate
     ): List<Array<Any>>
+
+    @Query(
+        """
+        SELECT COALESCE(SUM(p.amount), 0) 
+        FROM Posting p 
+        WHERE p.tenantId = :tenantId 
+        AND p.postingDate BETWEEN :startDate AND :endDate
+        AND (
+            CASE 
+                WHEN :accountType = 'REVENUE' THEN p.accountNumber LIKE '3%'
+                WHEN :accountType = 'EXPENSE' THEN p.accountNumber LIKE '4%' OR p.accountNumber LIKE '5%' OR p.accountNumber LIKE '6%' OR p.accountNumber LIKE '7%'
+                WHEN :accountType = 'ASSET' THEN p.accountNumber LIKE '1%'
+                WHEN :accountType = 'LIABILITY' THEN p.accountNumber LIKE '2%' AND p.accountNumber NOT LIKE '20%'
+                WHEN :accountType = 'EQUITY' THEN p.accountNumber LIKE '20%'
+                ELSE FALSE
+            END
+        )
+    """
+    )
+    fun getAccountTypeTotal(
+        @Param("tenantId") tenantId: Long,
+        @Param("accountType") accountType: String,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): BigDecimal
+
+    @Query(
+        """
+        SELECT p.accountNumber, SUM(p.amount) as totalAmount
+        FROM Posting p 
+        WHERE p.tenantId = :tenantId 
+        AND p.postingDate BETWEEN :startDate AND :endDate
+        AND (
+            CASE 
+                WHEN :accountType = 'REVENUE' THEN p.accountNumber LIKE '3%'
+                WHEN :accountType = 'EXPENSE' THEN p.accountNumber LIKE '4%' OR p.accountNumber LIKE '5%' OR p.accountNumber LIKE '6%' OR p.accountNumber LIKE '7%'
+                WHEN :accountType = 'ASSET' THEN p.accountNumber LIKE '1%'
+                WHEN :accountType = 'LIABILITY' THEN p.accountNumber LIKE '2%' AND p.accountNumber NOT LIKE '20%'
+                WHEN :accountType = 'EQUITY' THEN p.accountNumber LIKE '20%'
+                ELSE FALSE
+            END
+        )
+        GROUP BY p.accountNumber
+        ORDER BY totalAmount DESC
+        LIMIT :limit
+    """
+    )
+    fun getTopAccountsByType(
+        @Param("tenantId") tenantId: Long,
+        @Param("accountType") accountType: String,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate,
+        @Param("limit") limit: Int
+    ): List<Array<Any>>
 }

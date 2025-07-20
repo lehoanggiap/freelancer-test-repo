@@ -2,6 +2,8 @@ package com.respiroc.ledger.domain.repository
 
 import com.respiroc.ledger.domain.model.Voucher
 import com.respiroc.util.repository.CustomJpaRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
@@ -31,4 +33,21 @@ interface VoucherRepository : CustomJpaRepository<Voucher, Long> {
     """
     )
     fun findFirstEmptyVoucherByTenantId(@Param("tenantId") tenantId: Long): Voucher?
+
+    @Query(
+        """
+        SELECT v FROM Voucher v 
+        WHERE v.tenantId = :tenantId
+        AND (:search IS NULL OR v.description IS NULL OR v.description LIKE CONCAT('%', :search, '%'))
+        AND (:startDate IS NULL OR v.date >= :startDate)
+        AND (:endDate IS NULL OR v.date <= :endDate)
+    """
+    )
+    fun findVouchersWithPagination(
+        @Param("tenantId") tenantId: Long,
+        @Param("search") search: String?,
+        @Param("startDate") startDate: LocalDate?,
+        @Param("endDate") endDate: LocalDate?,
+        pageRequest: Pageable
+    ): Page<Voucher>
 }
