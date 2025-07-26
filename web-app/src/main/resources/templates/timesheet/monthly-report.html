@@ -9,25 +9,25 @@
 
 <body>
 <main layout:fragment="content">
-    <div class="monthly-report-container">
+    <div class="r-monthly-report-container">
         
         <!-- Header Section -->
-        <div class="monthly-report-header">
-            <h1 class="monthly-report-title">Monthly Timesheet Report</h1>
-            <p class="monthly-report-subtitle">Overview of monthly employee hours and project contributions.</p>
+        <div class="r-monthly-report-header">
+            <h1 class="r-monthly-report-title">Monthly Timesheet Report</h1>
+            <p class="r-monthly-report-subtitle">Overview of monthly employee hours and project contributions.</p>
         </div>
 
         <!-- Filters Section -->
-        <div class="monthly-report-filters">
+        <div class="r-monthly-report-filters">
             <form id="reportFiltersForm" 
                   hx-get="/htmx/timesheet/monthly-report" 
                   hx-target="#reportTableContainer" 
                   hx-trigger="change, submit"
                   hx-indicator="#loadingIndicator">
                 
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label class="filter-label" for="monthFilter">Month</label>
+                <div class="r-filters-grid">
+                    <div class="r-filter-group">
+                        <label class="r-filter-label" for="monthFilter">Month</label>
                         <wa-select id="monthFilter" name="month" size="small" th:value="${selectedMonth}"
                                    hx-get="/htmx/timesheet/monthly-report" 
                                    hx-target="#reportTableContainer" 
@@ -49,8 +49,8 @@
                         </wa-select>
                     </div>
 
-                    <div class="filter-group">
-                        <label class="filter-label" for="yearFilter">Year</label>
+                    <div class="r-filter-group">
+                        <label class="r-filter-label" for="yearFilter">Year</label>
                         <wa-select id="yearFilter" name="year" size="small" th:value="${selectedYear}"
                                    hx-get="/htmx/timesheet/monthly-report" 
                                    hx-target="#reportTableContainer" 
@@ -64,8 +64,8 @@
                         </wa-select>
                     </div>
 
-                    <div class="filter-group">
-                        <label class="filter-label" for="projectFilter">All Projects</label>
+                    <div class="r-filter-group">
+                        <label class="r-filter-label" for="projectFilter">All Projects</label>
                         <wa-select id="projectFilter" name="projectId" size="small"
                                    hx-get="/htmx/timesheet/monthly-report" 
                                    hx-target="#reportTableContainer" 
@@ -82,8 +82,8 @@
                         </wa-select>
                     </div>
 
-                    <div class="filter-group">
-                        <label class="filter-label" for="employeeFilter">All Employees</label>
+                    <div class="r-filter-group">
+                        <label class="r-filter-label" for="employeeFilter">All Employees</label>
                         <wa-select id="employeeFilter" name="employeeId" size="small"
                                    hx-get="/htmx/timesheet/monthly-report" 
                                    hx-target="#reportTableContainer" 
@@ -101,43 +101,43 @@
                     </div>
                 </div>
 
-                <div class="filter-search">
+                <div class="r-filter-search">
                     <input type="text" 
                            id="reportSearch" 
                            name="search" 
                            placeholder="Search notes or tasks..." 
-                           class="search-input"
+                           class="r-search-input"
                            th:value="${searchQuery}">
-                    <button type="submit" class="apply-filters-btn" id="applyFilters">Apply Filters</button>
+                    <button type="submit" class="r-apply-filters-btn" id="applyFilters">Apply Filters</button>
                 </div>
             </form>
         </div>
 
         <!-- Report Table -->
-        <div class="monthly-report-table-container" id="reportTableContainer">
+        <div class="r-monthly-report-table-container" id="reportTableContainer">
             <div th:replace="~{timesheet/fragments/monthly-report-table :: reportTable}"></div>
 
             <!-- Loading indicator -->
-            <div class="loading-overlay htmx-indicator" id="loadingIndicator">
+            <div class="r-loading-overlay htmx-indicator" id="loadingIndicator">
                 <wa-spinner size="large"></wa-spinner>
             </div>
         </div>
 
         <!-- Report Actions -->
-        <div class="report-actions">
-            <div class="report-actions-left">
+        <div class="r-report-actions">
+            <div class="r-report-actions-left">
                 <span th:text="'© ' + ${#temporals.format(#temporals.createNow(), 'yyyy')} + ' Timesheet Pro. All rights reserved.'">© 2023 Timesheet Pro. All rights reserved.</span>
             </div>
-            <div class="report-actions-right">
-                <button class="action-btn" id="downloadReport">
+            <div class="r-report-actions-right">
+                <button class="r-action-btn" id="downloadReport">
                     <wa-icon name="download"></wa-icon>
                     Download Report
                 </button>
-                <button class="action-btn" id="exportCSV">
+                <button class="r-action-btn" id="exportCSV">
                     <wa-icon name="table"></wa-icon>
                     Export to CSV
                 </button>
-                <button class="action-btn primary" id="printReport">
+                <button class="r-action-btn primary" id="printReport">
                     <wa-icon name="printer"></wa-icon>
                     Print Report
                 </button>

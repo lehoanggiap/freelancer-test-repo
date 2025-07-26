@@ -11,32 +11,27 @@ import com.respiroc.timesheet.application.dto.TimeReportEntryDto
 import com.respiroc.timesheet.application.dto.TimesheetRowDto
 import com.respiroc.timesheet.application.dto.WeeklyTimesheetDto
 import com.respiroc.timesheet.domain.model.Activity
+import com.respiroc.timesheet.domain.model.ApprovalStatusInfo
+import com.respiroc.timesheet.domain.model.MonthlyStatistics
 import com.respiroc.timesheet.domain.model.Project
 import com.respiroc.timesheet.domain.model.TimesheetEntry
+import com.respiroc.timesheet.domain.model.TimesheetRowData
 import com.respiroc.timesheet.domain.model.TimesheetStatus
 import com.respiroc.timesheet.domain.repository.ActivityRepository
 import com.respiroc.timesheet.domain.repository.ProjectRepository
 import com.respiroc.timesheet.domain.repository.TimesheetEntryRepository
 import com.respiroc.util.context.ContextAwareApi
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
-import java.util.*
+import java.util.Locale
 
-/**
- * Exception thrown when trying to modify approved timesheet entries
- */
+
 class ApprovedTimesheetModificationException(message: String) : IllegalStateException(message)
 
-/**
- * Service for managing timesheet operations including weekly timesheets, monthly reports,
- * and timesheet entry management.
- * 
- * This service follows domain-driven design principles and provides clean separation
- * between business logic and data access.
- */
 @Service
 @Transactional
 class TimesheetService(
@@ -46,15 +41,12 @@ class TimesheetService(
 ) : ContextAwareApi {
 
     companion object {
+        private val logger = LoggerFactory.getLogger(TimesheetService::class.java)
         private val DAY_NAMES = listOf("mon", "tue", "wed", "thu", "fri", "sat", "sun")
         private val MONTH_FORMATTER = DateTimeFormatter.ofPattern("MMMM")
         private const val MAX_HOURS_PER_DAY = 24
         private const val DAYS_IN_WEEK = 6L
     }
-
-    // ========================================
-    // Project and Activity Management
-    // ========================================
 
     @Transactional(readOnly = true)
     fun getActiveProjects(tenant: Tenant): List<ProjectDto> =
@@ -71,14 +63,10 @@ class TimesheetService(
         timesheetEntryRepository.findDistinctUsersByTenant(tenant).map { user ->
             EmployeeDto(
                 id = user.id,
-                name = user.email, // Using email as name for now
+                name = user.email,
                 email = user.email
             )
         }
-
-    // ========================================
-    // Weekly Timesheet Operations
-    // ========================================
 
     @Transactional(readOnly = true)
     fun getWeeklyTimesheet(user: User, tenant: Tenant, weekStart: LocalDate): WeeklyTimesheetDto {
@@ -105,7 +93,6 @@ class TimesheetService(
         
         executeTimesheetUpdates(entriesToSave, entriesToDelete)
         
-        // Reload entries to get accurate data for DTO
         val updatedEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
         return buildWeeklyTimesheetDto(updatedEntries, weekStart)
     }
@@ -129,6 +116,7 @@ class TimesheetService(
         } catch (e: ApprovedTimesheetModificationException) {
             throw e
         } catch (e: Exception) {
+            logger.error("Failed to submit timesheet for week $weekStart", e)
             false
         }
     }
@@ -146,13 +134,10 @@ class TimesheetService(
                 false
             }
         } catch (e: Exception) {
+            logger.error("Failed to delete timesheet entries with ids $entryIds", e)
             false
         }
     }
-
-    // ========================================
-    // Monthly Reporting
-    // ========================================
 
     @Transactional(readOnly = true)
     fun getMonthlyReport(
@@ -210,8 +195,8 @@ class TimesheetService(
             approvalStatus = approvalStatus.status,
             submittedAt = approvalStatus.submittedAt,
             approvedAt = approvalStatus.approvedAt,
-            approvedBy = null, // Future enhancement: track approver
-            rejectionReason = null // Future enhancement: track rejection reason
+            approvedBy = null,
+            rejectionReason = null
         )
     }
 
@@ -249,12 +234,6 @@ class TimesheetService(
             rows
         }
     }
-
-    private data class TimesheetRowData(
-        val hours: MutableMap<String, Double>,
-        val comments: MutableMap<String, String?>,
-        val entryIds: MutableMap<String, Int?>
-    )
 
     private fun processTimesheetRowData(entryList: List<TimesheetEntry>, weekStart: LocalDate): TimesheetRowData {
         val hours = mutableMapOf<String, Double>()
@@ -306,13 +285,6 @@ class TimesheetService(
         return weekStart.get(weekFields.weekOfWeekBasedYear())
     }
 
-    private data class ApprovalStatusInfo(
-        val isSubmitted: Boolean,
-        val status: String?,
-        val submittedAt: String?,
-        val approvedAt: String?
-    )
-
     private fun determineApprovalStatus(entries: List<TimesheetEntry>): ApprovalStatusInfo {
         val submittedEntry = entries.find { it.status == TimesheetStatus.SUBMITTED }
         val approvedEntry = entries.find { it.status == TimesheetStatus.APPROVED }
@@ -320,9 +292,9 @@ class TimesheetService(
         
         val isSubmitted = submittedEntry != null || approvedEntry != null || rejectedEntry != null
         val status = when {
-            approvedEntry != null -> "APPROVED"
-            rejectedEntry != null -> "REJECTED" 
-            submittedEntry != null -> "PENDING"
+            approvedEntry != null -> TimesheetStatus.APPROVED.toString()
+            rejectedEntry != null -> TimesheetStatus.REJECTED.toString()
+            submittedEntry != null -> TimesheetStatus.PENDING.toString()
             else -> null
         }
 
@@ -338,13 +310,11 @@ class TimesheetService(
         existingEntries: List<TimesheetEntry>,
         timesheetData: List<TimesheetRowDto>
     ) {
-        // Check if any existing entries are approved
         val hasApprovedEntries = existingEntries.any { it.status == TimesheetStatus.APPROVED }
         if (hasApprovedEntries) {
             throw ApprovedTimesheetModificationException("Cannot modify approved timesheet entries")
         }
-        
-        // Validate timesheet data
+
         validateProjectActivitySelection(timesheetData)
         validateHoursRange(timesheetData)
         validateNoDuplicateProjectActivityPairs(timesheetData)
@@ -389,7 +359,6 @@ class TimesheetService(
         val entriesToSave = mutableListOf<TimesheetEntry>()
         val entriesToDelete = mutableListOf<TimesheetEntry>()
 
-        // Process each timesheet row and day
         timesheetData.forEach { row ->
             DAY_NAMES.forEachIndexed { dayIndex: Int, dayName: String ->
                 val entryDate = weekStart.plusDays(dayIndex.toLong())
@@ -407,7 +376,6 @@ class TimesheetService(
             }
         }
 
-        // Mark unprocessed entries for deletion
         existingEntriesMap.forEach { (entryKey, entry) ->
             if (entryKey !in processedEntries) {
                 entriesToDelete.add(entry)
@@ -485,12 +453,10 @@ class TimesheetService(
         entriesToSave: List<TimesheetEntry>,
         entriesToDelete: List<TimesheetEntry>
     ) {
-        // Delete removed entries
         if (entriesToDelete.isNotEmpty()) {
             timesheetEntryRepository.deleteAll(entriesToDelete)
         }
         
-        // Save new/updated entries
         if (entriesToSave.isNotEmpty()) {
             timesheetEntryRepository.saveAll(entriesToSave)
         }
@@ -507,22 +473,6 @@ class TimesheetService(
             entry.status != TimesheetStatus.APPROVED
         }
     }
-
-    // ========================================
-    // Monthly Reporting
-    // ========================================
-
-    // Methods moved to private helper section below
-
-    // ========================================
-    // Utility Methods
-    // ========================================
-
-    // Method moved to private helper section below
-
-    // ========================================
-    // Private Helper Methods - Monthly Reporting
-    // ========================================
 
     private fun calculateMonthRange(month: LocalDate): Pair<LocalDate, LocalDate> {
         val monthStart = month.withDayOfMonth(1)
@@ -548,7 +498,7 @@ class TimesheetService(
     private fun buildMonthlyReportEntryDto(entry: TimesheetEntry): MonthlyReportEntryDto {
         return MonthlyReportEntryDto(
             date = entry.entryDate.toString(),
-            employeeName = entry.user.email, // Future enhancement: use actual name field
+            employeeName = entry.user.email,
             hoursWorked = entry.hours,
             projectName = entry.project?.name ?: "No Project",
             task = buildTaskDescription(entry.activity?.name, entry.description) ?: "No Task",
@@ -558,13 +508,6 @@ class TimesheetService(
             pendingApprovals = if (!entry.status.isApproved()) 1 else 0
         )
     }
-
-    private data class MonthlyStatistics(
-        val totalHours: Double,
-        val totalEntries: Int,
-        val approvedEntries: Int,
-        val pendingApprovals: Int
-    )
 
     private fun calculateMonthlyStatistics(entries: List<TimesheetEntry>): MonthlyStatistics {
         val totalHours = entries.sumOf { it.hours }

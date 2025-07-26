@@ -5,7 +5,7 @@ enum class TimesheetStatus {
     SUBMITTED,
     APPROVED,
     REJECTED,
-    IN_PROGRESS;
+    PENDING;
     
     fun isApproved(): Boolean {
         return this == APPROVED
