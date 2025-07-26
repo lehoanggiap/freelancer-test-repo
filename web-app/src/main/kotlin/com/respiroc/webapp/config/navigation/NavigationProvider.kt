@@ -48,6 +48,13 @@ class NavigationProvider {
             ),
 
             NavigationSection(
+                title = "Bank", icon = "bank",
+                items = listOf(
+                    NavigationSectionItem(label = "Bank Accounts Overview", url = "/bank/account"),
+                )
+            ),
+
+            NavigationSection(
                 title = "Timesheet", icon = "clock",
                 items = listOf(
                     NavigationSectionItem(label = "Time sheet", url = "/timesheet"),

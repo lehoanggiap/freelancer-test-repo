@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<body>
+<main layout:fragment="content">
+    <div class="wa-split" style="justify-content: right">
+        <wa-button size="small" th:href="@{/bank/account/new}"
+                   variant="neutral" th:text="#{bank_account.register}">
+        </wa-button>
+    </div>
+    <div th:replace="~{fragments/bank-account-table :: table(accounts=${accounts})}"></div>
+</main>
+</body>
+</html>

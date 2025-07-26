@@ -1,0 +1,34 @@
+<table class="wa-zebra-rows wa-hover-rows">
+    <thead>
+    <tr>
+        <th th:text="#{bank_account.table.account_number}"></th>
+        <th th:text="#{bank_account.table.bank_code}"></th>
+        <th th:text="#{bank_account.table.country_code}"></th>
+        <th style="text-align: right;" th:text="#{bank_account.table.actions}"></th>
+    </tr>
+    </thead>
+    <tbody id="bank-account-table-body">
+    <tr th:if="${accounts == null || accounts.isEmpty()}">
+        <td colspan="4" class="r-no-data" th:text="#{bank_account.table.not_found}" style="text-align: center"></td>
+    </tr>
+    <tr th:each="account : ${accounts}" th:id="'row-' + ${account.id}">
+        <td th:data-label="#{bank_account.table.account_number}" th:text="${account.accountNumber}"></td>
+        <td th:data-label="#{bank_account.table.bank_code}" th:text="${account.bankCode}"></td>
+        <td th:data-label="#{bank_account.table.country_code}" th:text="${account.countryCode}"></td>
+        <td th:data-label="#{bank_account.table.actions}" style="text-align: right;">
+            <wa-button
+                    size="small"
+                    variant="danger"
+                    th:hx-target="'#row-' + ${account.id}"
+                    th:hx-target-error="'#r-callout'"
+                    th:hx-delete="@{/bank/account/{id}(id=${account.id})}"
+                    th:hx-indicator="'#loading-indicator-' + ${account.id}"
+                    hx-disabled-elt="this"
+                    hx-swap="innerHTML swap:0.5s"
+                    th:text="#{bank_account.table.delete}"
+                    th:hx-confirm="#{bank_account.table.delete_confirm}">
+            </wa-button>
+        </td>
+    </tr>
+    </tbody>
+</table>

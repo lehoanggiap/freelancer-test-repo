@@ -57,36 +57,27 @@ class TenantHTMXController(
             return "fragments/error-message"
         }
 
-        try {
-            val companyInfo =
-                companyLookupApi.getInfo(createCompanyRequest.organizationNumber, createCompanyRequest.countryCode)
-            val companyAddress = companyInfo.address
-            val payload = CreateCompanyPayload(
-                name = companyInfo.name,
-                organizationNumber = companyInfo.registrationNumber!!,
-                countryCode = companyInfo.countryCode,
-                addressCountryCode = companyAddress?.countryCode,
-                postalCode = companyAddress?.postalCode,
-                city = companyAddress?.city,
-                addressPart1 = companyAddress?.address,
-                addressPart2 = null,
-                administrativeDivisionCode = null
-            )
+        val companyInfo =
+            companyLookupApi.getInfo(createCompanyRequest.organizationNumber, createCompanyRequest.countryCode)
+        val companyAddress = companyInfo.address
+        val payload = CreateCompanyPayload(
+            name = companyInfo.name,
+            organizationNumber = companyInfo.registrationNumber!!,
+            countryCode = companyInfo.countryCode,
+            addressCountryCode = companyAddress?.countryCode,
+            postalCode = companyAddress?.postalCode,
+            city = companyAddress?.city,
+            addressPart1 = companyAddress?.address,
+            addressPart2 = null,
+            administrativeDivisionCode = null
+        )
 
-            val tenant = userService.createTenantForUser(payload, user())
+        val tenant = userService.createTenantForUser(payload, user())
 
-            val user = user()
-            userService.selectTenant(user, tenant.id)
-            val token = jwt.generateToken(subject = user.id.toString(), tenantId = tenant.id)
-            setJwtCookie(token, response)
-            return "redirect:htmx:/"
-
-        } catch (e: Exception) {
-            model.addAttribute(
-                errorMessageAttributeName,
-                "Failed to create company: ${e.message}"
-            )
-            return "fragments/error-message"
-        }
+        val user = user()
+        userService.selectTenant(user, tenant.id)
+        val token = jwt.generateToken(subject = user.id.toString(), tenantId = tenant.id)
+        setJwtCookie(token, response)
+        return "redirect:htmx:/"
     }
 }

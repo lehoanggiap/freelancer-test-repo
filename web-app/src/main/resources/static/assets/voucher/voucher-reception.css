@@ -45,7 +45,17 @@ wa-copy-button::part(button) {
     background-color: var(--wa-color-surface-raised);
 }
 
+.r-empty-state {
+    text-align: center;
+    padding: var(--wa-space-4xl);
+    color: var(--wa-color-gray-50);
+}
 
+.r-empty-state-icon {
+    font-size: var(--wa-font-size-4xl);
+    margin-bottom: var(--wa-space-m);
+    opacity: 0.5;
+}
 
 @media (max-width: 768px) {
 

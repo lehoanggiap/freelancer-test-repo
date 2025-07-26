@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
+const shortcutMap = {
+    'saveVoucher': () => document.getElementById("saveButton")?.click(),
+    'addNewRow': () => addPostingLine(),
+};
+
 async function initializeExistingPostingComboboxes() {
     try {
         // Check if functions are available

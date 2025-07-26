@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<body>
+
+<main layout:fragment="content">
+    <div id="alert-container" style="margin-bottom: var(--wa-space-m)"></div>
+    <wa-card style="margin-bottom: var(--wa-space-m);">
+        <div style="padding: var(--wa-space-xl)">
+            <form id="registerBankAccountForm"
+                  th:object="${account}"
+                  method="post"
+                  th:hx-post="@{/htmx/bank/account}"
+                  th:hx-indicator="'#loading-indicator'"
+                  th:hx-disabled-elt="'#submitButton'"
+                  th:hx-target-error="'#r-callout'"
+                  style="--min-column-size: 500px;"
+                  th:hx-swap="'innerHTML'">
+                <div class="wa-grid">
+                    <wa-select
+                            id="countryCode"
+                            name="countryCode"
+                            value="NO"
+                            th:field="*{countryCode}"
+                            th:label="#{bank_account.form.country}">
+                        <wa-option value="NO" th:text="#{company.create.form.country.norway}"></wa-option>
+                    </wa-select>
+                    <wa-input
+                            id="bban"
+                            name="bban"
+                            th:label="#{bank_account.form.accountNumber}"
+                            th:field="*{bban}"
+                            placeholder="Enter account number..."
+                            size="medium"
+                            required
+                            autocomplete="off">
+                    </wa-input>
+                </div>
+                <div style="margin-top: var(--wa-space-m);">
+                    <wa-button type="submit"
+                               variant="success"
+                               size="small"
+                               id="submitButton"
+                               th:text="#{bank_account.form.submit}">
+                    </wa-button>
+                    <wa-spinner id="loading-indicator"
+                                class="htmx-indicator"
+                                style="font-size: var(--wa-font-size-xl)">
+                    </wa-spinner>
+                </div>
+            </form>
+        </div>
+    </wa-card>
+</main>
+</body>
+</html>
