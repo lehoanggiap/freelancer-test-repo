@@ -1,10 +1,22 @@
 package com.respiroc.timesheet.application
 
-import com.respiroc.timesheet.application.dto.*
-import com.respiroc.timesheet.domain.model.*
-import com.respiroc.timesheet.domain.repository.*
 import com.respiroc.user.domain.model.User
 import com.respiroc.tenant.domain.model.Tenant
+import com.respiroc.timesheet.application.dto.ActivityDto
+import com.respiroc.timesheet.application.dto.EmployeeDto
+import com.respiroc.timesheet.application.dto.MonthlyReportDto
+import com.respiroc.timesheet.application.dto.MonthlyReportEntryDto
+import com.respiroc.timesheet.application.dto.ProjectDto
+import com.respiroc.timesheet.application.dto.TimeReportEntryDto
+import com.respiroc.timesheet.application.dto.TimesheetRowDto
+import com.respiroc.timesheet.application.dto.WeeklyTimesheetDto
+import com.respiroc.timesheet.domain.model.Activity
+import com.respiroc.timesheet.domain.model.Project
+import com.respiroc.timesheet.domain.model.TimesheetEntry
+import com.respiroc.timesheet.domain.model.TimesheetStatus
+import com.respiroc.timesheet.domain.repository.ActivityRepository
+import com.respiroc.timesheet.domain.repository.ProjectRepository
+import com.respiroc.timesheet.domain.repository.TimesheetEntryRepository
 import com.respiroc.util.context.ContextAwareApi
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
