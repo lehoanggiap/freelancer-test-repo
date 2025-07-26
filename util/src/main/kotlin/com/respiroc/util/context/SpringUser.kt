@@ -14,6 +14,9 @@ class SpringUser(val ctx: UserContext) : User(
     !ctx.isLocked,
     mapToGrantedAuthorities(ctx.roles, ctx.currentTenant?.roles)
 ) {
+    val id: Long
+        get() = ctx.id
+
     companion object {
 
         private fun mapToGrantedAuthorities(

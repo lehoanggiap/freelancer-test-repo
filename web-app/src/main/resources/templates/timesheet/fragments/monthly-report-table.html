@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Monthly Report Table Fragment -->
+<div th:fragment="reportTable">
+    <!-- Status Indicators -->
+    <div class="status-indicators">
+        <div class="status-indicator total-hours-logged">
+            <span>📊</span>
+            <span class="hours-badge" th:text="${reportSummary?.totalHours ?: '0'}" id="totalHoursIndicator">0</span>
+            <span>Total Hours Logged</span>
+        </div>
+        <div class="status-indicator approved-entries">
+            <span>✅</span>
+            <span class="hours-badge" th:text="${reportSummary?.approvedEntries ?: '0'}" id="approvedEntriesIndicator">0</span>
+            <span>Approved Entries</span>
+        </div>
+        <div class="status-indicator pending-approvals">
+            <span>⏳</span>
+            <span class="hours-badge" th:text="${reportSummary?.pendingApprovals ?: '0'}" id="pendingApprovalsIndicator">0</span>
+            <span>Pending Approvals</span>
+        </div>
+    </div>
+
+    <table class="monthly-report-table">
+        <thead>
+            <tr>
+                <th style="width: 80px;">Date</th>
+                <th style="width: 120px;">Employee Name</th>
+                <th style="width: 80px;">Hours Worked</th>
+                <th style="width: 150px;">Project</th>
+                <th style="width: 120px;">Task</th>
+                <th style="width: 200px;">Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dynamic data when available -->
+            <tr th:each="entry : ${reportEntries}">
+                <td class="date-cell" th:text="${entry.date}">2024-07-01</td>
+                <td class="employee-name" th:text="${entry.employeeName}">Employee Name</td>
+                <td class="hours-worked" th:text="${entry.hoursWorked}">8</td>
+                <td class="project-name" th:text="${entry.projectName}">Project Name</td>
+                <td class="task-description" th:text="${entry.task ?: '-'}">Task Description</td>
+                <td class="notes-cell" th:text="${entry.notes ?: '-'}">Notes</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Empty state -->
+    <div th:if="${reportEntries == null or reportEntries.empty}" class="empty-state">
+        <div class="empty-state-icon">📊</div>
+        <h3>No timesheet entries found</h3>
+        <p>No time entries match your current filter criteria.</p>
+        <p>Try adjusting the date range or removing some filters.</p>
+    </div>
+</div>
+
+</html>

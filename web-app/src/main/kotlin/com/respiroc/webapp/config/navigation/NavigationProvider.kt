@@ -45,6 +45,14 @@ class NavigationProvider {
                     NavigationSectionItem(label = "New Customer", url = "/contact/customer/new"),
                     NavigationSectionItem(label = "New Supplier", url = "/contact/supplier/new")
                 )
+            ),
+
+            NavigationSection(
+                title = "Timesheet", icon = "clock",
+                items = listOf(
+                    NavigationSectionItem(label = "Time sheet", url = "/timesheet"),
+                    NavigationSectionItem(label = "Monthly time report", url = "/timesheet/monthly-report")
+                )
             )
         )
     }

@@ -1,0 +1,579 @@
+/* Timesheet Container */
+.r-timesheet-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--wa-space-l);
+}
+
+/* Header Section */
+.r-timesheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--wa-space-m);
+    padding: var(--wa-space-m);
+    background: var(--wa-color-surface-raised);
+    border-radius: var(--wa-border-radius-m);
+    border: 1px solid var(--wa-color-gray-90);
+}
+
+.r-period-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+}
+
+.r-nav-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
+.r-period-info {
+    text-align: center;
+    margin: 0 var(--wa-space-m);
+}
+
+.r-period-label {
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-gray-50);
+    margin-bottom: var(--wa-space-2xs);
+}
+
+.r-period-text {
+    font-weight: 600;
+    font-size: var(--wa-font-size-s);
+}
+
+.r-employee-info {
+    text-align: center;
+}
+
+.r-employee-label {
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-gray-50);
+    margin-bottom: var(--wa-space-2xs);
+}
+
+.r-employee-name {
+    font-weight: 600;
+    font-size: var(--wa-font-size-s);
+}
+
+.r-save-section {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+}
+
+/* Ensure save button and indicator have consistent height */
+#r-save-button,
+#r-saved-indicator {
+    height: 28px; /* Match wa-button small size height */
+    display: flex;
+    align-items: center;
+}
+
+/* Minimal saved indicator styling - let Web Awesome handle most styling */
+#r-saved-indicator {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Date Range */
+.r-date-range {
+    text-align: center;
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-gray-40);
+    margin-bottom: var(--wa-space-l);
+}
+
+/* Timesheet Table */
+.r-timesheet-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--wa-color-gray-90);
+    border-radius: var(--wa-border-radius-m);
+    background: var(--wa-color-white);
+}
+
+.r-timesheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--wa-font-size-xs);
+}
+
+.r-timesheet-table th {
+    background: var(--wa-color-surface-raised);
+    padding: var(--wa-space-s);
+    text-align: center;
+    font-weight: 600;
+    color: var(--wa-color-gray-30);
+    border-bottom: 2px solid var(--wa-color-gray-90);
+    border-right: 1px solid var(--wa-color-gray-90);
+}
+
+.r-timesheet-table th:last-child {
+    border-right: none;
+}
+
+.r-project-header,
+.r-activity-header {
+    text-align: left;
+    width: 180px; /* Match the cell width */
+    min-width: 160px; /* Match the minimum cell width */
+}
+
+.r-day-header {
+    width: 80px;
+    min-width: 70px;
+}
+
+.r-day-date {
+    font-size: var(--wa-font-size-s);
+    font-weight: 700;
+    color: var(--wa-color-gray-20);
+}
+
+.r-day-name {
+    font-size: var(--wa-font-size-xs);
+    color: var(--wa-color-gray-50);
+    margin-top: var(--wa-space-2xs);
+}
+
+.r-total-header,
+.r-remain-header {
+    width: 60px;
+    min-width: 50px;
+}
+
+/* Table Rows */
+.r-timesheet-row td {
+    padding: var(--wa-space-xs);
+    border-bottom: 1px solid var(--wa-color-gray-95);
+    border-right: 1px solid var(--wa-color-gray-95);
+    vertical-align: top;
+}
+
+.r-timesheet-row td:last-child {
+    border-right: none;
+}
+
+.r-project-cell,
+.r-activity-cell {
+    width: 180px; /* Increased from 120px for better full-width display */
+    min-width: 160px; /* Ensure minimum width on smaller screens */
+}
+
+.r-day-cell {
+    width: 80px;
+}
+
+.r-total-cell,
+.r-remain-cell {
+    width: 60px;
+    text-align: center;
+}
+
+/* Dropdown Styling */
+.r-project-select,
+.r-activity-select {
+    width: 100%;
+    min-width: 160px; /* Ensure dropdowns are wide enough */
+    font-size: var(--wa-font-size-xs);
+}
+
+/* Improve dropdown appearance on larger screens */
+@media (min-width: 1200px) {
+    .r-project-select,
+    .r-activity-select {
+        min-width: 180px;
+        font-size: var(--wa-font-size-s); /* Slightly larger text on big screens */
+    }
+}
+
+/* Legacy Input Styling (kept for backward compatibility) */
+.r-project-input,
+.r-activity-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: var(--wa-font-size-xs);
+}
+
+.r-project-input:focus,
+.r-activity-input:focus {
+    background: var(--wa-color-blue-98);
+    border: 1px solid var(--wa-color-blue-60);
+    border-radius: var(--wa-border-radius-s);
+}
+
+.r-hours-input {
+    width: 100%;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: var(--wa-font-size-xs);
+    margin-bottom: var(--wa-space-2xs);
+}
+
+.r-hours-input:focus {
+    background: var(--wa-color-blue-98);
+    border: 1px solid var(--wa-color-blue-60);
+    border-radius: var(--wa-border-radius-s);
+}
+
+.r-comment-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: var(--wa-font-size-2xs);
+    color: var(--wa-color-gray-40);
+}
+
+.r-comment-input:focus {
+    background: var(--wa-color-blue-98);
+    border: 1px solid var(--wa-color-blue-60);
+    border-radius: var(--wa-border-radius-s);
+}
+
+.r-row-total {
+    font-weight: 600;
+    color: var(--wa-color-gray-20);
+}
+
+/* New Row and Totals */
+.r-new-row td {
+    padding: var(--wa-space-s);
+    text-align: left;
+    border-bottom: 2px solid var(--wa-color-gray-90);
+}
+
+.r-new-row-btn {
+    font-size: var(--wa-font-size-xs);
+}
+
+.r-totals-row {
+    background: var(--wa-color-surface-raised);
+    font-weight: 600;
+}
+
+.r-totals-row td {
+    padding: var(--wa-space-s);
+    text-align: center;
+    border-right: 1px solid var(--wa-color-gray-90);
+}
+
+.r-totals-row td:last-child {
+    border-right: none;
+}
+
+.r-totals-label {
+    text-align: left !important;
+    color: var(--wa-color-gray-30);
+}
+
+.r-day-total {
+    color: var(--wa-color-gray-20);
+    font-weight: 700;
+}
+
+.r-grand-total {
+    color: var(--wa-color-gray-10);
+    font-weight: 700;
+    background: var(--wa-color-gray-95);
+}
+
+/* Save Feedback */
+.r-save-feedback {
+    margin-top: var(--wa-space-s);
+    text-align: center;
+}
+
+/* Completion Section */
+.r-completion-section {
+    margin: var(--wa-space-l) 0;
+    text-align: left;
+}
+
+/* Time Report Section */
+.r-time-report {
+    margin-top: var(--wa-space-xl);
+}
+
+.r-time-report-title {
+    font-size: var(--wa-font-size-l);
+    font-weight: 600;
+    margin-bottom: var(--wa-space-m);
+    color: var(--wa-color-gray-20);
+}
+
+.r-time-report-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--wa-color-gray-90);
+    border-radius: var(--wa-border-radius-m);
+    background: var(--wa-color-white);
+}
+
+.r-time-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--wa-font-size-s);
+}
+
+.r-time-report-table th {
+    background: var(--wa-color-surface-raised);
+    padding: var(--wa-space-s);
+    text-align: left;
+    font-weight: 600;
+    color: var(--wa-color-gray-30);
+    border-bottom: 2px solid var(--wa-color-gray-90);
+    border-right: 1px solid var(--wa-color-gray-90);
+}
+
+.r-time-report-table th:last-child {
+    border-right: none;
+}
+
+.r-time-report-table td {
+    padding: var(--wa-space-s);
+    border-bottom: 1px solid var(--wa-color-gray-95);
+    border-right: 1px solid var(--wa-color-gray-95);
+}
+
+.r-time-report-table td:last-child {
+    border-right: none;
+}
+
+.r-time-report-table tr:hover {
+    background: var(--wa-color-surface-raised);
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+    .r-timesheet-container {
+        padding: var(--wa-space-m);
+    }
+    
+    .r-timesheet-header {
+        flex-direction: column;
+        gap: var(--wa-space-m);
+        text-align: center;
+    }
+    
+    .r-period-navigation {
+        order: 1;
+    }
+    
+    .r-employee-info {
+        order: 2;
+    }
+    
+    .r-saved-status {
+        order: 3;
+    }
+    
+    .r-timesheet-table {
+        font-size: var(--wa-font-size-2xs);
+    }
+    
+    .r-day-header {
+        width: 60px;
+        min-width: 50px;
+    }
+    
+    .r-day-cell {
+        width: 60px;
+    }
+    
+    .r-project-header,
+    .r-activity-header {
+        width: 100px;
+        min-width: 80px;
+    }
+    
+    .r-project-cell,
+    .r-activity-cell {
+        width: 100px;
+    }
+    
+    .r-project-select,
+    .r-activity-select {
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .r-timesheet-wrapper {
+        font-size: var(--wa-font-size-2xs);
+    }
+    
+    .r-day-header {
+        width: 50px;
+        min-width: 40px;
+    }
+    
+    .r-day-cell {
+        width: 50px;
+    }
+    
+    .r-project-header,
+    .r-activity-header {
+        width: 80px;
+        min-width: 60px;
+    }
+    
+    .r-project-cell,
+    .r-activity-cell {
+        width: 80px;
+    }
+    
+    .r-project-select,
+    .r-activity-select {
+        min-width: 80px;
+    }
+}
+
+/* Loading States */
+.htmx-request .r-saved-indicator {
+    opacity: 0.5;
+}
+
+/* .htmx-request::after {
+    content: " Saving...";
+    color: var(--wa-color-gray-50);
+} */
+
+/* Hover Effects */
+.r-timesheet-row:hover {
+    background: var(--wa-color-surface-raised);
+}
+
+.r-nav-button:hover {
+    background: var(--wa-color-gray-95);
+}
+
+/* Focus States */
+wa-input:focus-within {
+    outline: 2px solid var(--wa-color-blue-60);
+    outline-offset: 1px;
+}
+
+/* Custom scrollbar for better UX */
+.r-timesheet-wrapper::-webkit-scrollbar,
+.r-time-report-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.r-timesheet-wrapper::-webkit-scrollbar-track,
+.r-time-report-wrapper::-webkit-scrollbar-track {
+    background: var(--wa-color-gray-95);
+    border-radius: 4px;
+}
+
+.r-timesheet-wrapper::-webkit-scrollbar-thumb,
+.r-time-report-wrapper::-webkit-scrollbar-thumb {
+    background: var(--wa-color-gray-80);
+    border-radius: 4px;
+}
+
+.r-timesheet-wrapper::-webkit-scrollbar-thumb:hover,
+.r-time-report-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--wa-color-gray-70);
+}
+
+/* Approval Section */
+.r-completion-section {
+    margin: var(--wa-space-l) 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.r-approval-status {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-m);
+    flex-wrap: wrap;
+}
+
+#r-submit-button {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#r-submit-button.submitted {
+    opacity: 0.8;
+}
+
+#r-approval-indicator {
+    display: none;
+    padding: var(--wa-space-s) var(--wa-space-m) !important;
+    min-height: 38px !important;
+    align-items: center !important;
+    font-weight: 600 !important;
+    border: 1px solid !important;
+    font-size: var(--wa-font-size-m) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+#r-approval-indicator wa-icon {
+    margin-right: var(--wa-space-2xs);
+    font-size: 16px;
+}
+
+/* Approval status specific styling */
+#r-approval-indicator[variant="warning"] {
+    background-color: #fef9e7 !important;
+    color: #b45309 !important;
+    border-color: #f59e0b !important;
+}
+
+#r-approval-indicator[variant="success"] {
+    background-color: #f0fdf4 !important;
+    color: #166534 !important;
+    border-color: #22c55e !important;
+}
+
+#r-approval-indicator[variant="danger"] {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: #ef4444 !important;
+}
+
+/* Submit Feedback Messages */
+.r-submit-feedback, .r-delete-feedback {
+    margin: var(--wa-space-m) 0;
+    padding: var(--wa-space-s) var(--wa-space-m);
+    border-radius: var(--wa-border-radius-s);
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+    font-size: var(--wa-font-size-s);
+    animation: slideIn 0.3s ease-out;
+}
+
+.r-submit-feedback.r-success-message, .r-delete-feedback.r-success-message {
+    background: var(--wa-color-green-95);
+    border: 1px solid var(--wa-color-green-80);
+    color: var(--wa-color-green-20);
+}
+
+.r-submit-feedback.r-error-message, .r-delete-feedback.r-error-message {
+    background: var(--wa-color-red-95);
+    border: 1px solid var(--wa-color-red-80);
+    color: var(--wa-color-red-20);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

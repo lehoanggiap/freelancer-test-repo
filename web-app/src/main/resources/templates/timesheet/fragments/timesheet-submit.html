@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Submit Section Fragment -->
+<div class="r-approval-status" id="r-approval-status" th:fragment="submit-section">
+    <!-- Hidden form for HTMX submit -->
+    <form id="r-submit-form" style="display: none;">
+        <input type="hidden" name="weekStart" th:value="${currentWeek}"/>
+    </form>
+    
+    <wa-button size="small" variant="success" id="r-submit-button" 
+              hx-post="/htmx/timesheet/submit"
+              hx-include="#r-submit-form"
+              hx-target="#r-approval-status"
+              hx-swap="outerHTML"
+              hx-on:htmx:confirm="checkUnsavedChanges(event)"
+              type="button"
+              th:classappend="${weeklyTimesheet.isSubmitted ? 'submitted' : ''}"
+              th:disabled="${weeklyTimesheet.isSubmitted}">
+        <span th:text="${weeklyTimesheet.isSubmitted ? 'Submitted' : 'Submit'}">Submit</span>
+    </wa-button>
+    <wa-tag size="small" id="r-approval-indicator" style="display: inline-flex"
+           th:if="${weeklyTimesheet.isSubmitted}"
+           th:attr="variant=${weeklyTimesheet.approvalStatus == 'APPROVED' ? 'success' : (weeklyTimesheet.approvalStatus == 'REJECTED' ? 'danger' : 'warning')}">
+        <wa-icon th:name="${weeklyTimesheet.approvalStatus == 'APPROVED' ? 'check' : (weeklyTimesheet.approvalStatus == 'REJECTED' ? 'x' : 'clock')}"></wa-icon>
+        <span th:text="${weeklyTimesheet.approvalStatus == 'APPROVED' ? 'Approved' : (weeklyTimesheet.approvalStatus == 'REJECTED' ? 'Rejected' : 'Pending Approval')}">Pending Approval</span>
+    </wa-tag>
+</div>
+
+</html>

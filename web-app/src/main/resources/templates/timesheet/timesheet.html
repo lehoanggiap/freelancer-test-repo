@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Timesheet</title>
+    <link rel="stylesheet" th:href="@{/assets/timesheet/timesheet.css}">
+</head>
+<body>
+<main layout:fragment="content">
+    <div th:insert="~{timesheet/fragments/timesheet-fragments :: timesheet-container}"></div>
+</main>
+
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        // Make model data available globally for timesheet.js
+        window.timesheetData = {
+            projects: /*[[${projects}]]*/[],
+            activities: /*[[${activities}]]*/[],
+        };
+    </script>
+    <script th:src="@{/assets/timesheet/timesheet.js}"></script>
+</th:block>
+</body>
+</html>

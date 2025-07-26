@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en" layout:decorate="~{layout/base}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Monthly Timesheet Report</title>
+    <link rel="stylesheet" th:href="@{/assets/timesheet/monthly-report.css}">
+</head>
+
+<body>
+<main layout:fragment="content">
+    <div class="monthly-report-container">
+        
+        <!-- Header Section -->
+        <div class="monthly-report-header">
+            <h1 class="monthly-report-title">Monthly Timesheet Report</h1>
+            <p class="monthly-report-subtitle">Overview of monthly employee hours and project contributions.</p>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="monthly-report-filters">
+            <form id="reportFiltersForm" 
+                  hx-get="/htmx/timesheet/monthly-report" 
+                  hx-target="#reportTableContainer" 
+                  hx-trigger="change, submit"
+                  hx-indicator="#loadingIndicator">
+                
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label" for="monthFilter">Month</label>
+                        <wa-select id="monthFilter" name="month" size="small" th:value="${selectedMonth}"
+                                   hx-get="/htmx/timesheet/monthly-report" 
+                                   hx-target="#reportTableContainer" 
+                                   hx-trigger="wa-change"
+                                   hx-include="#reportFiltersForm"
+                                   hx-indicator="#loadingIndicator">
+                            <wa-option value="01" th:selected="${selectedMonth == '01'}">January</wa-option>
+                            <wa-option value="02" th:selected="${selectedMonth == '02'}">February</wa-option>
+                            <wa-option value="03" th:selected="${selectedMonth == '03'}">March</wa-option>
+                            <wa-option value="04" th:selected="${selectedMonth == '04'}">April</wa-option>
+                            <wa-option value="05" th:selected="${selectedMonth == '05'}">May</wa-option>
+                            <wa-option value="06" th:selected="${selectedMonth == '06'}">June</wa-option>
+                            <wa-option value="07" th:selected="${selectedMonth == '07'}">July</wa-option>
+                            <wa-option value="08" th:selected="${selectedMonth == '08'}">August</wa-option>
+                            <wa-option value="09" th:selected="${selectedMonth == '09'}">September</wa-option>
+                            <wa-option value="10" th:selected="${selectedMonth == '10'}">October</wa-option>
+                            <wa-option value="11" th:selected="${selectedMonth == '11'}">November</wa-option>
+                            <wa-option value="12" th:selected="${selectedMonth == '12'}">December</wa-option>
+                        </wa-select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="yearFilter">Year</label>
+                        <wa-select id="yearFilter" name="year" size="small" th:value="${selectedYear}"
+                                   hx-get="/htmx/timesheet/monthly-report" 
+                                   hx-target="#reportTableContainer" 
+                                   hx-trigger="wa-change"
+                                   hx-include="#reportFiltersForm"
+                                   hx-indicator="#loadingIndicator">
+                            <wa-option value="2023" th:selected="${selectedYear == '2023'}">2023</wa-option>
+                            <wa-option value="2024" th:selected="${selectedYear == '2024'}">2024</wa-option>
+                            <wa-option value="2025" th:selected="${selectedYear == '2025'}">2025</wa-option>
+                            <wa-option value="2026" th:selected="${selectedYear == '2026'}">2026</wa-option>
+                        </wa-select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="projectFilter">All Projects</label>
+                        <wa-select id="projectFilter" name="projectId" size="small"
+                                   hx-get="/htmx/timesheet/monthly-report" 
+                                   hx-target="#reportTableContainer" 
+                                   hx-trigger="wa-change"
+                                   hx-include="#reportFiltersForm"
+                                   hx-indicator="#loadingIndicator">
+                            <wa-option value="" th:selected="${selectedProjectId == null or selectedProjectId == ''}">All Projects</wa-option>
+                            <wa-option th:each="project : ${projects}" 
+                                       th:value="${project.id}" 
+                                       th:text="${project.name}"
+                                       th:selected="${selectedProjectId != null and selectedProjectId == project.id}">
+                                Project Name
+                            </wa-option>
+                        </wa-select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="employeeFilter">All Employees</label>
+                        <wa-select id="employeeFilter" name="employeeId" size="small"
+                                   hx-get="/htmx/timesheet/monthly-report" 
+                                   hx-target="#reportTableContainer" 
+                                   hx-trigger="wa-change"
+                                   hx-include="#reportFiltersForm"
+                                   hx-indicator="#loadingIndicator">
+                            <wa-option value="" th:selected="${selectedEmployeeId == null or selectedEmployeeId == ''}">All Employees</wa-option>
+                            <wa-option th:each="employee : ${employees}" 
+                                       th:value="${employee.id}" 
+                                       th:text="${employee.name}"
+                                       th:selected="${selectedEmployeeId != null and selectedEmployeeId == employee.id}">
+                                Employee Name
+                            </wa-option>
+                        </wa-select>
+                    </div>
+                </div>
+
+                <div class="filter-search">
+                    <input type="text" 
+                           id="reportSearch" 
+                           name="search" 
+                           placeholder="Search notes or tasks..." 
+                           class="search-input"
+                           th:value="${searchQuery}">
+                    <button type="submit" class="apply-filters-btn" id="applyFilters">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Report Table -->
+        <div class="monthly-report-table-container" id="reportTableContainer">
+            <div th:replace="~{timesheet/fragments/monthly-report-table :: reportTable}"></div>
+
+            <!-- Loading indicator -->
+            <div class="loading-overlay htmx-indicator" id="loadingIndicator">
+                <wa-spinner size="large"></wa-spinner>
+            </div>
+        </div>
+
+        <!-- Report Actions -->
+        <div class="report-actions">
+            <div class="report-actions-left">
+                <span th:text="'© ' + ${#temporals.format(#temporals.createNow(), 'yyyy')} + ' Timesheet Pro. All rights reserved.'">© 2023 Timesheet Pro. All rights reserved.</span>
+            </div>
+            <div class="report-actions-right">
+                <button class="action-btn" id="downloadReport">
+                    <wa-icon name="download"></wa-icon>
+                    Download Report
+                </button>
+                <button class="action-btn" id="exportCSV">
+                    <wa-icon name="table"></wa-icon>
+                    Export to CSV
+                </button>
+                <button class="action-btn primary" id="printReport">
+                    <wa-icon name="printer"></wa-icon>
+                    Print Report
+                </button>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<th:block layout:fragment="scripts">
+    <script th:src="@{/assets/timesheet/monthly-report.js}"></script>
+</th:block>
+</body>
+</html> 
