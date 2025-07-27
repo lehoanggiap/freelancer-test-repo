@@ -1,38 +1,38 @@
 /* Monthly Timesheet Report Styles */
 
 .r-monthly-report-container {
-    background: #f8fafc;
+    background: var(--wa-color-surface-lowered);
     min-height: 100vh;
     padding: var(--wa-space-m);
 }
 
 .r-monthly-report-header {
-    background: white;
+    background: var(--wa-color-surface-default);
     border-radius: var(--wa-border-radius-m);
     padding: var(--wa-space-l);
     margin-bottom: var(--wa-space-m);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--wa-shadow-s);
 }
 
 .r-monthly-report-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--wa-color-gray-900);
+    font-size: var(--wa-font-size-xl);
+    font-weight: var(--wa-font-weight-heading);
+    color: var(--wa-color-text-normal);
     margin: 0 0 var(--wa-space-xs) 0;
 }
 
 .r-monthly-report-subtitle {
-    color: var(--wa-color-gray-600);
-    font-size: 0.875rem;
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-s);
     margin: 0;
 }
 
 .r-monthly-report-filters {
-    background: white;
+    background: var(--wa-color-surface-default);
     border-radius: var(--wa-border-radius-m);
     padding: var(--wa-space-l);
     margin-bottom: var(--wa-space-m);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--wa-shadow-s);
 }
 
 .r-filters-grid {
@@ -49,9 +49,9 @@
 }
 
 .r-filter-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--wa-color-gray-700);
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-action);
+    color: var(--wa-color-text-normal);
 }
 
 .r-filter-search {
@@ -64,89 +64,89 @@
 .r-search-input {
     flex: 1;
     padding: var(--wa-space-s);
-    border: 1px solid var(--wa-color-gray-300);
+    border: 1px solid var(--wa-color-surface-border);
     border-radius: var(--wa-border-radius-s);
-    font-size: 0.875rem;
+    font-size: var(--wa-font-size-s);
 }
 
 .r-apply-filters-btn {
-    background: var(--wa-color-blue-600);
-    color: white;
+    background: var(--wa-color-brand-fill-normal);
+    color: var(--wa-color-brand-on-normal);
     border: none;
     padding: var(--wa-space-s) var(--wa-space-m);
     border-radius: var(--wa-border-radius-s);
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-action);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: var(--wa-transition-fast);
 }
 
 .r-apply-filters-btn:hover {
-    background: var(--wa-color-blue-700);
+    background: var(--wa-color-brand-fill-loud);
 }
 
 .r-monthly-report-table-container {
-    background: white;
+    background: var(--wa-color-surface-default);
     border-radius: var(--wa-border-radius-m);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--wa-shadow-s);
     overflow: hidden;
 }
 
 .r-monthly-report-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: var(--wa-font-size-s);
 }
 
 .r-monthly-report-table th {
-    background: #f8fafc;
+    background: var(--wa-color-surface-raised);
     padding: var(--wa-space-s) var(--wa-space-m);
     text-align: left;
-    font-weight: 600;
-    color: var(--wa-color-gray-700);
-    border-bottom: 1px solid var(--wa-color-gray-200);
+    font-weight: var(--wa-font-weight-heading);
+    color: var(--wa-color-text-normal);
+    border-bottom: 1px solid var(--wa-color-surface-border);
     white-space: nowrap;
 }
 
 .r-monthly-report-table td {
     padding: var(--wa-space-s) var(--wa-space-m);
-    border-bottom: 1px solid var(--wa-color-gray-100);
+    border-bottom: 1px solid var(--wa-color-surface-border);
     vertical-align: top;
 }
 
 .r-monthly-report-table tbody tr:hover {
-    background: #f8fafc;
+    background: var(--wa-color-surface-raised);
 }
 
 .r-date-cell {
-    color: var(--wa-color-gray-600);
-    font-size: 0.8125rem;
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-xs);
 }
 
 .r-employee-name {
-    font-weight: 500;
-    color: var(--wa-color-gray-900);
+    font-weight: var(--wa-font-weight-action);
+    color: var(--wa-color-text-normal);
 }
 
 .r-hours-worked {
-    font-weight: 500;
-    color: var(--wa-color-gray-900);
+    font-weight: var(--wa-font-weight-action);
+    color: var(--wa-color-text-normal);
     text-align: center;
 }
 
 .r-project-name {
-    color: var(--wa-color-blue-600);
-    font-weight: 500;
+    color: var(--wa-color-text-link);
+    font-weight: var(--wa-font-weight-action);
 }
 
 .r-task-description {
-    color: var(--wa-color-gray-600);
+    color: var(--wa-color-text-quiet);
     max-width: 300px;
 }
 
 .r-notes-cell {
-    color: var(--wa-color-gray-600);
-    font-size: 0.8125rem;
+    color: var(--wa-color-text-quiet);
+    font-size: var(--wa-font-size-xs);
     max-width: 200px;
     word-wrap: break-word;
 }
@@ -164,48 +164,48 @@
     gap: var(--wa-space-xs);
     padding: var(--wa-space-xs) var(--wa-space-s);
     border-radius: var(--wa-border-radius-s);
-    font-size: 0.8125rem;
-    font-weight: 500;
+    font-size: var(--wa-font-size-xs);
+    font-weight: var(--wa-font-weight-action);
 }
 
 .r-total-hours-logged {
-    background: #dbeafe;
-    color: #1e40af;
+    background: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
 }
 
 .r-approved-entries {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--wa-color-success-fill-quiet);
+    color: var(--wa-color-success-on-quiet);
 }
 
 .r-pending-approvals {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--wa-color-warning-fill-quiet);
+    color: var(--wa-color-warning-on-quiet);
 }
 
 .r-hours-badge {
-    background: var(--wa-color-blue-100);
-    color: var(--wa-color-blue-800);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    background: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+    padding: var(--wa-space-3xs) var(--wa-space-2xs);
+    border-radius: var(--wa-border-radius-s);
+    font-size: var(--wa-font-size-2xs);
+    font-weight: var(--wa-font-weight-bold);
 }
 
 .r-report-actions {
-    background: white;
+    background: var(--wa-color-surface-default);
     border-radius: var(--wa-border-radius-m);
     padding: var(--wa-space-l);
     margin-top: var(--wa-space-m);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--wa-shadow-s);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .r-report-actions-left {
-    font-size: 0.875rem;
-    color: var(--wa-color-gray-600);
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-text-quiet);
 }
 
 .r-report-actions-right {
@@ -215,44 +215,44 @@
 
 .r-action-btn {
     padding: var(--wa-space-s) var(--wa-space-m);
-    border: 1px solid var(--wa-color-gray-300);
+    border: 1px solid var(--wa-color-surface-border);
     border-radius: var(--wa-border-radius-s);
-    background: white;
-    color: var(--wa-color-gray-700);
-    font-size: 0.875rem;
-    font-weight: 500;
+    background: var(--wa-color-surface-default);
+    color: var(--wa-color-text-normal);
+    font-size: var(--wa-font-size-s);
+    font-weight: var(--wa-font-weight-action);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: var(--wa-transition-fast);
     display: flex;
     align-items: center;
     gap: var(--wa-space-xs);
 }
 
 .r-action-btn:hover {
-    background: var(--wa-color-gray-50);
-    border-color: var(--wa-color-gray-400);
+    background: var(--wa-color-surface-raised);
+    border-color: var(--wa-color-neutral-border-normal);
 }
 
 .r-action-btn.primary {
-    background: var(--wa-color-blue-600);
-    color: white;
-    border-color: var(--wa-color-blue-600);
+    background: var(--wa-color-brand-fill-normal);
+    color: var(--wa-color-brand-on-normal);
+    border-color: var(--wa-color-brand-border-normal);
 }
 
 .r-action-btn.primary:hover {
-    background: var(--wa-color-blue-700);
-    border-color: var(--wa-color-blue-700);
+    background: var(--wa-color-brand-fill-loud);
+    border-color: var(--wa-color-brand-border-loud);
 }
 
 .r-empty-state {
     text-align: center;
     padding: var(--wa-space-xl);
-    color: var(--wa-color-gray-500);
+    color: var(--wa-color-text-quiet);
 }
 
 .r-empty-state-icon {
-    font-size: 3rem;
-    color: var(--wa-color-gray-400);
+    font-size: var(--wa-font-size-4xl);
+    color: var(--wa-color-neutral-fill-quiet);
     margin-bottom: var(--wa-space-m);
 }
 
@@ -292,7 +292,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--wa-color-overlay-modal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -309,4 +309,108 @@
 
 .htmx-request.r-loading-overlay {
     display: flex;
+}
+
+/* Status Badge Styles */
+.r-status-badge {
+    display: inline-block;
+    padding: var(--wa-space-2xs) var(--wa-space-xs);
+    border-radius: var(--wa-border-radius-s);
+    font-size: var(--wa-font-size-2xs);
+    font-weight: var(--wa-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.r-status-draft {
+    background-color: var(--wa-color-neutral-100);
+    color: var(--wa-color-neutral-700);
+    border: 1px solid var(--wa-color-neutral-300);
+}
+
+.r-status-submitted {
+    background-color: var(--wa-color-warning-100);
+    color: var(--wa-color-warning-800);
+    border: 1px solid var(--wa-color-warning-300);
+}
+
+.r-status-approved {
+    background-color: var(--wa-color-success-100);
+    color: var(--wa-color-success-800);
+    border: 1px solid var(--wa-color-success-300);
+}
+
+.r-status-rejected {
+    background-color: var(--wa-color-danger-100);
+    color: var(--wa-color-danger-800);
+    border: 1px solid var(--wa-color-danger-300);
+}
+
+.r-status-pending {
+    background-color: var(--wa-color-primary-100);
+    color: var(--wa-color-primary-800);
+    border: 1px solid var(--wa-color-primary-300);
+}
+
+/* Approval Section Styles */
+.r-approve-section {
+    background: var(--wa-color-surface-default);
+    border-radius: var(--wa-border-radius-m);
+    padding: var(--wa-space-l);
+    margin-bottom: var(--wa-space-m);
+    box-shadow: var(--wa-shadow-s);
+    border-left: 4px solid var(--wa-color-primary-600);
+}
+
+.r-approve-section h3 {
+    color: var(--wa-color-text-normal);
+    font-size: var(--wa-font-size-l);
+    font-weight: var(--wa-font-weight-semibold);
+    margin: 0 0 var(--wa-space-s) 0;
+}
+
+/* Success and Error Messages */
+.r-success-message {
+    background-color: var(--wa-color-success-50);
+    border: 1px solid var(--wa-color-success-200);
+    border-radius: var(--wa-border-radius-s);
+    color: var(--wa-color-success-700);
+    padding: var(--wa-space-s);
+    margin-bottom: var(--wa-space-m);
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+}
+
+.r-success-message::before {
+    content: "✓";
+    font-weight: var(--wa-font-weight-bold);
+}
+
+.r-error-message {
+    background-color: var(--wa-color-danger-50);
+    border: 1px solid var(--wa-color-danger-200);
+    border-radius: var(--wa-border-radius-s);
+    color: var(--wa-color-danger-700);
+    padding: var(--wa-space-s);
+    margin-bottom: var(--wa-space-m);
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-xs);
+}
+
+.r-error-message::before {
+    content: "⚠";
+    font-weight: var(--wa-font-weight-bold);
+}
+
+/* Table adjustments for status column */
+.r-monthly-report-table th:nth-child(6),
+.r-monthly-report-table td:nth-child(6) {
+    text-align: center;
+}
+
+.r-status-cell {
+    text-align: center;
+    vertical-align: middle;
 }

@@ -3,6 +3,61 @@
 
 <!-- Monthly Report Table Fragment -->
 <div th:fragment="reportTable">
+    <!-- Success Message -->
+    <div th:if="${successMessage}" class="r-success-message" style="margin-bottom: 1rem; padding: 0.75rem; background-color: var(--wa-color-success-50); border: 1px solid var(--wa-color-success-200); border-radius: var(--wa-border-radius-small); color: var(--wa-color-success-700);">
+        <span th:text="${successMessage}">Success message</span>
+    </div>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="r-error-message" style="margin-bottom: 1rem; padding: 0.75rem; background-color: var(--wa-color-danger-50); border: 1px solid var(--wa-color-danger-200); border-radius: var(--wa-border-radius-small); color: var(--wa-color-danger-700);">
+        <span th:text="${errorMessage}">Error message</span>
+    </div>
+
+    <!-- Approve Section - Only show when status filter is SUBMITTED and there are submitted entries -->
+    <div class="r-approve-section" 
+         th:if="${selectedStatus == 'SUBMITTED' and reportEntries != null and !reportEntries.empty and reportEntries.?[status == 'SUBMITTED'].size() > 0}"
+         style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--wa-color-neutral-50); border-radius: var(--wa-border-radius-medium); border: 1px solid var(--wa-color-neutral-200);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="margin: 0; color: var(--wa-color-neutral-700); font-size: var(--wa-font-size-large);">Timesheet Approval</h3>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: var(--wa-font-size-small); color: var(--wa-color-neutral-600);">
+                    Approve submitted entries for current filters
+                </span>
+            </div>
+        </div>
+        
+        <form id="approveTimesheetForm"
+              hx-post="/htmx/timesheet/monthly-report/approve"
+              hx-target="#reportTableContainer"
+              hx-confirm="Are you sure you want to approve all submitted timesheet entries matching the current filters?"
+              hx-indicator="#approveLoadingIndicator">
+            
+            <!-- Hidden fields to preserve current filter state -->
+            <input type="hidden" name="month" th:value="${selectedYear + '-' + selectedMonth + '-01'}"/>
+            <input type="hidden" name="projectId" th:value="${selectedProjectId}"/>
+            <input type="hidden" name="employeeId" th:value="${selectedEmployeeId}"/>
+            <input type="hidden" name="status" th:value="${selectedStatus}"/>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: var(--wa-font-size-small); color: var(--wa-color-neutral-600);">
+                    <span th:if="${selectedProjectId == null and selectedEmployeeId == null}">
+                        This will approve ALL submitted entries for this month
+                    </span>
+                    <span th:if="${selectedProjectId != null or selectedEmployeeId != null}">
+                        This will approve submitted entries matching current filters
+                    </span>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <wa-spinner id="approveLoadingIndicator" size="small" class="htmx-indicator"></wa-spinner>
+                    <wa-button type="submit" variant="primary" size="small">
+                        <wa-icon name="check-circle" slot="prefix"></wa-icon>
+                        Approve Timesheets
+                    </wa-button>
+                </div>
+            </div>
+        </form>
+    </div>
     <!-- Status Indicators -->
     <div class="r-status-indicators">
         <div class="r-status-indicator r-total-hours-logged">
@@ -30,6 +85,7 @@
                 <th style="width: 80px;">Hours Worked</th>
                 <th style="width: 150px;">Project</th>
                 <th style="width: 120px;">Task</th>
+                <th style="width: 100px;">Status</th>
                 <th style="width: 200px;">Notes</th>
             </tr>
         </thead>
@@ -41,6 +97,13 @@
                 <td class="r-hours-worked" th:text="${entry.hoursWorked}">8</td>
                 <td class="r-project-name" th:text="${entry.projectName}">Project Name</td>
                 <td class="r-task-description" th:text="${entry.task ?: '-'}">Task Description</td>
+                <td class="r-status-cell">
+                    <span th:class="'r-status-badge r-status-' + ${entry.status?.toLowerCase()}" 
+                          th:text="${entry.status ?: 'DRAFT'}"
+                          style="padding: 0.25rem 0.5rem; border-radius: var(--wa-border-radius-small); font-size: var(--wa-font-size-x-small); font-weight: var(--wa-font-weight-semibold); text-transform: uppercase;">
+                        Status
+                    </span>
+                </td>
                 <td class="r-notes-cell" th:text="${entry.notes ?: '-'}">Notes</td>
             </tr>
         </tbody>

@@ -1,6 +1,5 @@
 package com.respiroc.timesheet.domain.model
 
-import com.respiroc.tenant.domain.model.Tenant
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -11,6 +10,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.TenantId
 import org.hibernate.annotations.UpdateTimestamp
 import java.io.Serializable
 import java.time.Instant
@@ -23,9 +23,9 @@ class Project : Serializable {
     @Column(name = "id", nullable = false)
     var id: Int = -1
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    lateinit var tenant: Tenant
+    @TenantId
+    @Column(name = "tenant_id", nullable = false, updatable = false)
+    var tenantId: Long? = null
 
     @Column(name = "name", nullable = false, length = 128)
     lateinit var name: String
@@ -35,9 +35,6 @@ class Project : Serializable {
 
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean = true
-
-    @Column(name = "color", length = 7)
-    var color: String? = null // Hex color code for UI
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

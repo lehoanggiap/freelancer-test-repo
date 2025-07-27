@@ -1,8 +1,10 @@
 package com.respiroc.timesheet.application.dto
 
+import java.time.LocalDate
+
 data class WeeklyTimesheetDto(
-    val weekStart: String, // ISO date format
-    val weekEnd: String,
+    val weekStart: LocalDate,
+    val weekEnd: LocalDate,
     val weekNumber: Int,
     val year: Int,
     val rows: List<TimesheetRowDto>,

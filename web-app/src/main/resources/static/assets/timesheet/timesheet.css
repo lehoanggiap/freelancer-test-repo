@@ -14,7 +14,7 @@
     padding: var(--wa-space-m);
     background: var(--wa-color-surface-raised);
     border-radius: var(--wa-border-radius-m);
-    border: 1px solid var(--wa-color-gray-90);
+    border: 1px solid var(--wa-color-surface-border);
 }
 
 .r-period-navigation {
@@ -36,12 +36,12 @@
 
 .r-period-label {
     font-size: var(--wa-font-size-xs);
-    color: var(--wa-color-gray-50);
+    color: var(--wa-color-text-quiet);
     margin-bottom: var(--wa-space-2xs);
 }
 
 .r-period-text {
-    font-weight: 600;
+    font-weight: var(--wa-font-weight-heading);
     font-size: var(--wa-font-size-s);
 }
 
@@ -51,12 +51,12 @@
 
 .r-employee-label {
     font-size: var(--wa-font-size-xs);
-    color: var(--wa-color-gray-50);
+    color: var(--wa-color-text-quiet);
     margin-bottom: var(--wa-space-2xs);
 }
 
 .r-employee-name {
-    font-weight: 600;
+    font-weight: var(--wa-font-weight-heading);
     font-size: var(--wa-font-size-s);
 }
 
@@ -83,16 +83,16 @@
 .r-date-range {
     text-align: center;
     font-size: var(--wa-font-size-s);
-    color: var(--wa-color-gray-40);
+    color: var(--wa-color-text-quiet);
     margin-bottom: var(--wa-space-l);
 }
 
 /* Timesheet Table */
 .r-timesheet-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--wa-color-gray-90);
+    border: 1px solid var(--wa-color-surface-border);
     border-radius: var(--wa-border-radius-m);
-    background: var(--wa-color-white);
+    background: var(--wa-color-surface-default);
 }
 
 .r-timesheet-table {
@@ -105,10 +105,10 @@
     background: var(--wa-color-surface-raised);
     padding: var(--wa-space-s);
     text-align: center;
-    font-weight: 600;
-    color: var(--wa-color-gray-30);
-    border-bottom: 2px solid var(--wa-color-gray-90);
-    border-right: 1px solid var(--wa-color-gray-90);
+    font-weight: var(--wa-font-weight-heading);
+    color: var(--wa-color-text-normal);
+    border-bottom: 2px solid var(--wa-color-surface-border);
+    border-right: 1px solid var(--wa-color-surface-border);
 }
 
 .r-timesheet-table th:last-child {
@@ -129,13 +129,13 @@
 
 .r-day-date {
     font-size: var(--wa-font-size-s);
-    font-weight: 700;
-    color: var(--wa-color-gray-20);
+    font-weight: var(--wa-font-weight-bold);
+    color: var(--wa-color-text-normal);
 }
 
 .r-day-name {
     font-size: var(--wa-font-size-xs);
-    color: var(--wa-color-gray-50);
+    color: var(--wa-color-text-quiet);
     margin-top: var(--wa-space-2xs);
 }
 
@@ -148,8 +148,8 @@
 /* Table Rows */
 .r-timesheet-row td {
     padding: var(--wa-space-xs);
-    border-bottom: 1px solid var(--wa-color-gray-95);
-    border-right: 1px solid var(--wa-color-gray-95);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+    border-right: 1px solid var(--wa-color-surface-border);
     vertical-align: top;
 }
 
@@ -201,8 +201,8 @@
 
 .r-project-input:focus,
 .r-activity-input:focus {
-    background: var(--wa-color-blue-98);
-    border: 1px solid var(--wa-color-blue-60);
+    background: var(--wa-color-brand-fill-quiet);
+    border: 1px solid var(--wa-color-brand-border-normal);
     border-radius: var(--wa-border-radius-s);
 }
 
@@ -216,8 +216,8 @@
 }
 
 .r-hours-input:focus {
-    background: var(--wa-color-blue-98);
-    border: 1px solid var(--wa-color-blue-60);
+    background: var(--wa-color-brand-fill-quiet);
+    border: 1px solid var(--wa-color-brand-border-normal);
     border-radius: var(--wa-border-radius-s);
 }
 
@@ -226,25 +226,25 @@
     border: none;
     background: transparent;
     font-size: var(--wa-font-size-2xs);
-    color: var(--wa-color-gray-40);
+    color: var(--wa-color-text-quiet);
 }
 
 .r-comment-input:focus {
-    background: var(--wa-color-blue-98);
-    border: 1px solid var(--wa-color-blue-60);
+    background: var(--wa-color-brand-fill-quiet);
+    border: 1px solid var(--wa-color-brand-border-normal);
     border-radius: var(--wa-border-radius-s);
 }
 
 .r-row-total {
-    font-weight: 600;
-    color: var(--wa-color-gray-20);
+    font-weight: var(--wa-font-weight-heading);
+    color: var(--wa-color-text-normal);
 }
 
 /* New Row and Totals */
 .r-new-row td {
     padding: var(--wa-space-s);
     text-align: left;
-    border-bottom: 2px solid var(--wa-color-gray-90);
+    border-bottom: 2px solid var(--wa-color-surface-border);
 }
 
 .r-new-row-btn {
@@ -253,13 +253,13 @@
 
 .r-totals-row {
     background: var(--wa-color-surface-raised);
-    font-weight: 600;
+    font-weight: var(--wa-font-weight-heading);
 }
 
 .r-totals-row td {
     padding: var(--wa-space-s);
     text-align: center;
-    border-right: 1px solid var(--wa-color-gray-90);
+    border-right: 1px solid var(--wa-color-surface-border);
 }
 
 .r-totals-row td:last-child {
@@ -268,18 +268,18 @@
 
 .r-totals-label {
     text-align: left !important;
-    color: var(--wa-color-gray-30);
+    color: var(--wa-color-text-normal);
 }
 
 .r-day-total {
-    color: var(--wa-color-gray-20);
-    font-weight: 700;
+    color: var(--wa-color-text-normal);
+    font-weight: var(--wa-font-weight-bold);
 }
 
 .r-grand-total {
-    color: var(--wa-color-gray-10);
-    font-weight: 700;
-    background: var(--wa-color-gray-95);
+    color: var(--wa-color-text-normal);
+    font-weight: var(--wa-font-weight-bold);
+    background: var(--wa-color-surface-lowered);
 }
 
 /* Save Feedback */
@@ -301,16 +301,16 @@
 
 .r-time-report-title {
     font-size: var(--wa-font-size-l);
-    font-weight: 600;
+    font-weight: var(--wa-font-weight-heading);
     margin-bottom: var(--wa-space-m);
-    color: var(--wa-color-gray-20);
+    color: var(--wa-color-text-normal);
 }
 
 .r-time-report-wrapper {
     overflow-x: auto;
-    border: 1px solid var(--wa-color-gray-90);
+    border: 1px solid var(--wa-color-surface-border);
     border-radius: var(--wa-border-radius-m);
-    background: var(--wa-color-white);
+    background: var(--wa-color-surface-default);
 }
 
 .r-time-report-table {
@@ -323,10 +323,10 @@
     background: var(--wa-color-surface-raised);
     padding: var(--wa-space-s);
     text-align: left;
-    font-weight: 600;
-    color: var(--wa-color-gray-30);
-    border-bottom: 2px solid var(--wa-color-gray-90);
-    border-right: 1px solid var(--wa-color-gray-90);
+    font-weight: var(--wa-font-weight-heading);
+    color: var(--wa-color-text-normal);
+    border-bottom: 2px solid var(--wa-color-surface-border);
+    border-right: 1px solid var(--wa-color-surface-border);
 }
 
 .r-time-report-table th:last-child {
@@ -335,8 +335,8 @@
 
 .r-time-report-table td {
     padding: var(--wa-space-s);
-    border-bottom: 1px solid var(--wa-color-gray-95);
-    border-right: 1px solid var(--wa-color-gray-95);
+    border-bottom: 1px solid var(--wa-color-surface-border);
+    border-right: 1px solid var(--wa-color-surface-border);
 }
 
 .r-time-report-table td:last-child {
@@ -448,12 +448,12 @@
 }
 
 .r-nav-button:hover {
-    background: var(--wa-color-gray-95);
+    background: var(--wa-color-surface-lowered);
 }
 
 /* Focus States */
 wa-input:focus-within {
-    outline: 2px solid var(--wa-color-blue-60);
+    outline: 2px solid var(--wa-color-focus);
     outline-offset: 1px;
 }
 
@@ -465,19 +465,19 @@ wa-input:focus-within {
 
 .r-timesheet-wrapper::-webkit-scrollbar-track,
 .r-time-report-wrapper::-webkit-scrollbar-track {
-    background: var(--wa-color-gray-95);
-    border-radius: 4px;
+    background: var(--wa-color-surface-lowered);
+    border-radius: var(--wa-border-radius-s);
 }
 
 .r-timesheet-wrapper::-webkit-scrollbar-thumb,
 .r-time-report-wrapper::-webkit-scrollbar-thumb {
-    background: var(--wa-color-gray-80);
-    border-radius: 4px;
+    background: var(--wa-color-neutral-fill-quiet);
+    border-radius: var(--wa-border-radius-s);
 }
 
 .r-timesheet-wrapper::-webkit-scrollbar-thumb:hover,
 .r-time-report-wrapper::-webkit-scrollbar-thumb:hover {
-    background: var(--wa-color-gray-70);
+    background: var(--wa-color-neutral-fill-normal);
 }
 
 /* Approval Section */
@@ -512,11 +512,11 @@ wa-input:focus-within {
     padding: var(--wa-space-s) var(--wa-space-m) !important;
     min-height: 38px !important;
     align-items: center !important;
-    font-weight: 600 !important;
+    font-weight: var(--wa-font-weight-heading) !important;
     border: 1px solid !important;
     font-size: var(--wa-font-size-m) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    border-radius: var(--wa-border-radius-s) !important;
+    box-shadow: var(--wa-shadow-s) !important;
 }
 
 #r-approval-indicator wa-icon {
@@ -526,21 +526,21 @@ wa-input:focus-within {
 
 /* Approval status specific styling */
 #r-approval-indicator[variant="warning"] {
-    background-color: #fef9e7 !important;
-    color: #b45309 !important;
-    border-color: #f59e0b !important;
+    background-color: var(--wa-color-warning-fill-quiet) !important;
+    color: var(--wa-color-warning-on-quiet) !important;
+    border-color: var(--wa-color-warning-border-normal) !important;
 }
 
 #r-approval-indicator[variant="success"] {
-    background-color: #f0fdf4 !important;
-    color: #166534 !important;
-    border-color: #22c55e !important;
+    background-color: var(--wa-color-success-fill-quiet) !important;
+    color: var(--wa-color-success-on-quiet) !important;
+    border-color: var(--wa-color-success-border-normal) !important;
 }
 
 #r-approval-indicator[variant="danger"] {
-    background-color: #fef2f2 !important;
-    color: #dc2626 !important;
-    border-color: #ef4444 !important;
+    background-color: var(--wa-color-danger-fill-quiet) !important;
+    color: var(--wa-color-danger-on-quiet) !important;
+    border-color: var(--wa-color-danger-border-normal) !important;
 }
 
 /* Submit Feedback Messages */
@@ -552,19 +552,19 @@ wa-input:focus-within {
     align-items: center;
     gap: var(--wa-space-xs);
     font-size: var(--wa-font-size-s);
-    animation: slideIn 0.3s ease-out;
+    animation: slideIn var(--wa-transition-medium) ease-out;
 }
 
 .r-submit-feedback.r-success-message, .r-delete-feedback.r-success-message {
-    background: var(--wa-color-green-95);
-    border: 1px solid var(--wa-color-green-80);
-    color: var(--wa-color-green-20);
+    background: var(--wa-color-success-fill-quiet);
+    border: 1px solid var(--wa-color-success-border-normal);
+    color: var(--wa-color-success-on-quiet);
 }
 
 .r-submit-feedback.r-error-message, .r-delete-feedback.r-error-message {
-    background: var(--wa-color-red-95);
-    border: 1px solid var(--wa-color-red-80);
-    color: var(--wa-color-red-20);
+    background: var(--wa-color-danger-fill-quiet);
+    border: 1px solid var(--wa-color-danger-border-normal);
+    color: var(--wa-color-danger-on-quiet);
 }
 
 @keyframes slideIn {

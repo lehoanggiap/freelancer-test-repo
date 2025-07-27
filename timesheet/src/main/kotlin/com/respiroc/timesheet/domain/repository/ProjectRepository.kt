@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectRepository : CustomJpaRepository<Project, Int> {
     
-    @Query("SELECT p FROM Project p WHERE p.tenant = :tenant AND p.isActive = true ORDER BY p.name ASC")
-    fun findActiveProjectsByTenant(@Param("tenant") tenant: Tenant): List<Project>
+    @Query("SELECT p FROM Project p WHERE p.isActive = true ORDER BY p.name ASC")
+    fun findActiveProjectsByTenant(): List<Project>
     
-    fun findByTenantAndIsActiveTrue(tenant: Tenant): List<Project>
+    fun findByIsActiveTrue(): List<Project>
 }

@@ -4,6 +4,5 @@ data class ProjectDto(
     val id: Int,
     val name: String,
     val description: String? = null,
-    val color: String? = null,
     val isActive: Boolean = true
 )

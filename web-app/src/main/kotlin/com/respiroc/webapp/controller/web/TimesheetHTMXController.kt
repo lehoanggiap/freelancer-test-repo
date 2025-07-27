@@ -3,11 +3,11 @@ package com.respiroc.webapp.controller.web
 import com.respiroc.timesheet.application.TimesheetService
 import com.respiroc.timesheet.application.ApprovedTimesheetModificationException
 import com.respiroc.user.domain.model.User
-import com.respiroc.tenant.domain.model.Tenant
 import com.respiroc.webapp.controller.BaseController
 import com.respiroc.webapp.controller.request.SaveTimesheetRequest
 import com.respiroc.webapp.controller.request.TimesheetRowRequest
 import com.respiroc.webapp.controller.request.DeleteTimesheetEntriesRequest
+import com.respiroc.webapp.controller.request.ApproveTimesheetRequest
 import com.respiroc.webapp.controller.rest.request.SubmitTimesheetRequest
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -36,11 +36,11 @@ class TimesheetHTMXController(
     ): String {
         try {
             val weekStartDate = LocalDate.parse(weekStart)
-            loadTimesheetData(weekStartDate.toString(), model)
+            loadTimesheetData(weekStartDate, model)
             return "timesheet/fragments/timesheet-container"
         } catch (e: Exception) {
             model.addAttribute(errorMessageAttributeName, "Invalid week start date: $weekStart")
-            loadTimesheetData(timesheetService.getCurrentWeekStart().toString(), model)
+            loadTimesheetData(timesheetService.getCurrentWeekStart(), model)
             return "timesheet/fragments/timesheet-container"
         }
     }
@@ -54,43 +54,41 @@ class TimesheetHTMXController(
         response: HttpServletResponse
     ): String {
         val user = User().apply { id = user().id }
-        val tenant = Tenant().apply { id = tenantId() }
         
         try {
             // Check for validation errors
             if (bindingResult.hasErrors()) {
                 response.status = 400
                 model.addAttribute(errorMessageAttributeName, "Validation errors occurred")
-                loadTimesheetData(saveRequest.weekStart.toString(), model)
+                loadTimesheetData(saveRequest.weekStart, model)
                 return "timesheet/fragments/timesheet-main-content"
             }
             
-            val updatedTimesheet = timesheetService.saveWeeklyTimesheet(
+            val updatedTimesheet = timesheetService.saveTimesheet(
                 user, 
-                tenant, 
-                saveRequest.weekStart, 
-                saveRequest.toTimesheetRowDtos()
+                saveRequest.toTimesheetRowDtos(),
+                saveRequest.weekStart
             )
             
             // Return updated timesheet content
-            loadTimesheetData(saveRequest.weekStart.toString(), model)
+            loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
             
         } catch (e: ApprovedTimesheetModificationException) {
             model.addAttribute(errorMessageAttributeName, "Cannot modify approved timesheet")
-            loadTimesheetData(saveRequest.weekStart.toString(), model)
+            loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: IllegalArgumentException) {
             model.addAttribute(errorMessageAttributeName, "Invalid timesheet data: ${e.message}")
-            loadTimesheetData(saveRequest.weekStart.toString(), model)
+            loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: IllegalStateException) {
             model.addAttribute(errorMessageAttributeName, "Invalid timesheet state: ${e.message}")
-            loadTimesheetData(saveRequest.weekStart.toString(), model)
+            loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: Exception) {
             model.addAttribute(errorMessageAttributeName, "Save failed: ${e.message}")
-            loadTimesheetData(saveRequest.weekStart.toString(), model)
+            loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         }
     }
@@ -102,26 +100,25 @@ class TimesheetHTMXController(
         model: Model
     ): String {
         val user = User().apply { id = user().id }
-        val tenant = Tenant().apply { id = tenantId() }
         
         try {
-            val result = timesheetService.submitTimesheet(user, tenant, submitRequest.weekStart)
+            val result = timesheetService.submitTimesheet(user, submitRequest.weekStart)
             
             if (!result) {
                 model.addAttribute(errorMessageAttributeName, "Failed to submit timesheet - no timesheet entries found")
             }
             
             // Return updated submit section fragment only
-            loadTimesheetData(submitRequest.weekStart.toString(), model)
+            loadTimesheetData(submitRequest.weekStart, model)
             return "timesheet/fragments/timesheet-submit"
             
         } catch (e: ApprovedTimesheetModificationException) {
             model.addAttribute(errorMessageAttributeName, e.message ?: "Cannot modify approved timesheet")
-            loadTimesheetData(submitRequest.weekStart.toString(), model)
+            loadTimesheetData(submitRequest.weekStart, model)
             return "timesheet/fragments/timesheet-submit"
         } catch (e: Exception) {
             model.addAttribute(errorMessageAttributeName, "Error submitting timesheet: ${e.message}")
-            loadTimesheetData(submitRequest.weekStart.toString(), model)
+            loadTimesheetData(submitRequest.weekStart, model)
             return "timesheet/fragments/timesheet-submit"
         }
     }
@@ -134,50 +131,42 @@ class TimesheetHTMXController(
         model: Model
     ): String {
         val user = User().apply { id = user().id }
-        val tenant = Tenant().apply { id = tenantId() }
         
         try {
             // Check for validation errors
             if (bindingResult.hasErrors()) {
                 model.addAttribute(errorMessageAttributeName, "Validation errors occurred")
-                loadTimesheetData(deleteRequest.weekStart.toString(), model)
+                loadTimesheetData(deleteRequest.weekStart, model)
                 return "timesheet/fragments/timesheet-main-content"
             }
             
-            val result = timesheetService.deleteTimesheetEntries(user, tenant, deleteRequest.entryIds)
+            val result = timesheetService.deleteTimesheetEntries(user, deleteRequest.entryIds)
             
             if (!result) {
                 model.addAttribute(errorMessageAttributeName, "Failed to delete timesheet entries")
             }
             
-            loadTimesheetData(deleteRequest.weekStart.toString(), model)
+            loadTimesheetData(deleteRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
             
         } catch (e: Exception) {
             model.addAttribute(errorMessageAttributeName, "Error deleting timesheet entries: ${e.message}")
-            loadTimesheetData(deleteRequest.weekStart.toString(), model)
+            loadTimesheetData(deleteRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         }
     }
 
-    private fun loadTimesheetData(week: String, model: Model) {
+    private fun loadTimesheetData(weekStart: LocalDate, model: Model) {
         val user = User().apply { id = user().id }
-        val tenant = Tenant().apply { id = tenantId() }
-        
-        val weekStart = try { 
-            LocalDate.parse(week) 
-        } catch (e: Exception) { 
-            timesheetService.getCurrentWeekStart() 
-        }
         
         // Calculate previous and next week dates
         val previousWeek = weekStart.minusWeeks(1)
         val nextWeek = weekStart.plusWeeks(1)
         
-        val weeklyTimesheet = timesheetService.getWeeklyTimesheet(user, tenant, weekStart)
-        val projects = timesheetService.getActiveProjects(tenant)
-        val activities = timesheetService.getActiveActivities(tenant)
-        val timeReportEntries = timesheetService.generateTimeReportEntries(user, tenant, weekStart)
+        val weeklyTimesheet = timesheetService.getWeeklyTimesheet(user, weekStart)
+        val projects = timesheetService.getActiveProjects()
+        val activities = timesheetService.getActiveActivities()
+        val timeReportEntries = timesheetService.generateTimeReportEntries(user, weekStart)
         
         // Create week dates for headers
         val weekDates = (0..6).map { weekStart.plusDays(it.toLong()) }
@@ -218,38 +207,78 @@ class TimesheetHTMXController(
         @RequestParam(required = false) projectId: Int?,
         @RequestParam(required = false) employeeId: Int?,
         @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) status: String?,
         model: Model
     ): String {
-        val tenant = Tenant().apply { id = tenantId() }
-        
         // Parse month/year or default to current
         val selectedYear = year?.toIntOrNull() ?: LocalDate.now().year
         val selectedMonth = month?.toIntOrNull() ?: LocalDate.now().monthValue
         val reportDate = LocalDate.of(selectedYear, selectedMonth, 1)
         
-        // Get filtered monthly report
-        val monthlyReport = timesheetService.getMonthlyReport(
-            tenant, 
-            reportDate, 
-            projectId, 
-            employeeId, 
-            search
-        )
+        return loadMonthlyReportData(reportDate, projectId, employeeId, search, status, model)
+    }
+
+    @PostMapping("/monthly-report/approve")
+    @HxRequest
+    fun approveTimesheetEntries(
+        @Valid @ModelAttribute approveRequest: ApproveTimesheetRequest,
+        bindingResult: BindingResult,
+        model: Model,
+        response: HttpServletResponse
+    ): String {
+        try {
+            if (bindingResult.hasErrors()) {
+                response.status = 400
+                model.addAttribute(errorMessageAttributeName, "Invalid approval request")
+                return loadMonthlyReportData(approveRequest.month, approveRequest.projectId, approveRequest.employeeId, null, approveRequest.status, model)
+            }
+
+            val approverUserId = user().id
+            val approvedCount = timesheetService.approveTimesheetEntries(
+                approverUserId = approverUserId,
+                month = approveRequest.month,
+                employeeId = approveRequest.employeeId,
+                projectId = approveRequest.projectId
+            )
+
+            if (approvedCount == 0) {
+                model.addAttribute(errorMessageAttributeName, "No submitted timesheet entries found to approve")
+            } else {
+                model.addAttribute("successMessage", "Successfully approved $approvedCount timesheet entries")
+            }
+
+            return loadMonthlyReportData(approveRequest.month, approveRequest.projectId, approveRequest.employeeId, null, approveRequest.status, model)
+
+        } catch (e: Exception) {
+            model.addAttribute(errorMessageAttributeName, "Error approving timesheet entries: ${e.message}")
+            return loadMonthlyReportData(approveRequest.month, approveRequest.projectId, approveRequest.employeeId, null, approveRequest.status, model)
+        }
+    }
+
+    private fun loadMonthlyReportData(
+        month: LocalDate,
+        projectId: Int?,
+        employeeId: Int?,
+        search: String?,
+        status: String?,
+        model: Model
+    ): String {
+        val monthlyReport = timesheetService.getMonthlyReport(month, projectId, employeeId, search, status)
         
-        // Get filter data
-        val projects = timesheetService.getActiveProjects(tenant)
-        val employees = timesheetService.getActiveEmployees(tenant)
+        val projects = timesheetService.getActiveProjects()
+        val employees = timesheetService.getActiveEmployees()
         
         model.addAttribute("monthlyReport", monthlyReport)
         model.addAttribute("reportEntries", monthlyReport.entries)
         model.addAttribute("reportSummary", monthlyReport)
         model.addAttribute("projects", projects)
         model.addAttribute("employees", employees)
-        model.addAttribute("selectedMonth", String.format("%02d", selectedMonth))
-        model.addAttribute("selectedYear", selectedYear.toString())
+        model.addAttribute("selectedMonth", String.format("%02d", month.monthValue))
+        model.addAttribute("selectedYear", month.year.toString())
         model.addAttribute("selectedProjectId", projectId)
         model.addAttribute("selectedEmployeeId", employeeId)
         model.addAttribute("searchQuery", search)
+        model.addAttribute("selectedStatus", status)
         
         return "timesheet/fragments/monthly-report-table"
     }

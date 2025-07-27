@@ -1,7 +1,6 @@
 package com.respiroc.timesheet.domain.model
 
 import com.respiroc.user.domain.model.User
-import com.respiroc.tenant.domain.model.Tenant
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -14,6 +13,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.TenantId
 import org.hibernate.annotations.UpdateTimestamp
 import java.io.Serializable
 import java.time.Instant
@@ -31,9 +31,9 @@ class TimesheetEntry : Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     lateinit var user: User
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    lateinit var tenant: Tenant
+    @TenantId
+    @Column(name = "tenant_id", nullable = false, updatable = false)
+    var tenantId: Long? = null
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "project_id", nullable = true)

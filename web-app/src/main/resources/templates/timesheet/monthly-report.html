@@ -99,6 +99,23 @@
                             </wa-option>
                         </wa-select>
                     </div>
+
+                    <div class="r-filter-group">
+                        <label class="r-filter-label" for="statusFilter">All Statuses</label>
+                        <wa-select id="statusFilter" name="status" size="small"
+                                   hx-get="/htmx/timesheet/monthly-report" 
+                                   hx-target="#reportTableContainer" 
+                                   hx-trigger="wa-change"
+                                   hx-include="#reportFiltersForm"
+                                   hx-indicator="#loadingIndicator">
+                            <wa-option value="" th:selected="${selectedStatus == null or selectedStatus == ''}">All Statuses</wa-option>
+                            <wa-option value="DRAFT" th:selected="${selectedStatus == 'DRAFT'}">Draft</wa-option>
+                            <wa-option value="SUBMITTED" th:selected="${selectedStatus == 'SUBMITTED'}">Submitted</wa-option>
+                            <wa-option value="APPROVED" th:selected="${selectedStatus == 'APPROVED'}">Approved</wa-option>
+                            <wa-option value="REJECTED" th:selected="${selectedStatus == 'REJECTED'}">Rejected</wa-option>
+                            <wa-option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pending</wa-option>
+                        </wa-select>
+                    </div>
                 </div>
 
                 <div class="r-filter-search">
@@ -127,20 +144,6 @@
         <div class="r-report-actions">
             <div class="r-report-actions-left">
                 <span th:text="'© ' + ${#temporals.format(#temporals.createNow(), 'yyyy')} + ' Timesheet Pro. All rights reserved.'">© 2023 Timesheet Pro. All rights reserved.</span>
-            </div>
-            <div class="r-report-actions-right">
-                <button class="r-action-btn" id="downloadReport">
-                    <wa-icon name="download"></wa-icon>
-                    Download Report
-                </button>
-                <button class="r-action-btn" id="exportCSV">
-                    <wa-icon name="table"></wa-icon>
-                    Export to CSV
-                </button>
-                <button class="r-action-btn primary" id="printReport">
-                    <wa-icon name="printer"></wa-icon>
-                    Print Report
-                </button>
             </div>
         </div>
 

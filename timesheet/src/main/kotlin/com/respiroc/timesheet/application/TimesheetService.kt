@@ -1,7 +1,6 @@
 package com.respiroc.timesheet.application
 
 import com.respiroc.user.domain.model.User
-import com.respiroc.tenant.domain.model.Tenant
 import com.respiroc.timesheet.application.dto.ActivityDto
 import com.respiroc.timesheet.application.dto.EmployeeDto
 import com.respiroc.timesheet.application.dto.MonthlyReportDto
@@ -49,18 +48,18 @@ class TimesheetService(
     }
 
     @Transactional(readOnly = true)
-    fun getActiveProjects(tenant: Tenant): List<ProjectDto> =
-        projectRepository.findActiveProjectsByTenant(tenant).map(Project::toDto)
+    fun getActiveProjects(): List<ProjectDto> =
+        projectRepository.findActiveProjectsByTenant().map(Project::toDto)
 
     @Transactional(readOnly = true)
-    fun getActiveActivities(tenant: Tenant, projectId: Int? = null): List<ActivityDto> {
+    fun getActiveActivities(projectId: Int? = null): List<ActivityDto> {
         val project = projectId?.let { projectRepository.findById(it).orElse(null) }
-        return activityRepository.findActiveActivitiesForProject(tenant, project).map(Activity::toDto)
+        return activityRepository.findActiveActivitiesForProject(project).map(Activity::toDto)
     }
 
     @Transactional(readOnly = true)
-    fun getActiveEmployees(tenant: Tenant): List<EmployeeDto> =
-        timesheetEntryRepository.findDistinctUsersByTenant(tenant).map { user ->
+    fun getActiveEmployees(): List<EmployeeDto> =
+        timesheetEntryRepository.findDistinctUsersByTenant().map { user ->
             EmployeeDto(
                 id = user.id,
                 name = user.email,
@@ -69,39 +68,34 @@ class TimesheetService(
         }
 
     @Transactional(readOnly = true)
-    fun getWeeklyTimesheet(user: User, tenant: Tenant, weekStart: LocalDate): WeeklyTimesheetDto {
+    fun getWeeklyTimesheet(user: User, weekStart: LocalDate): WeeklyTimesheetDto {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
+        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
         return buildWeeklyTimesheetDto(entries, weekStart)
     }
 
     @Transactional
-    fun saveWeeklyTimesheet(
-        user: User,
-        tenant: Tenant,
-        weekStart: LocalDate,
-        timesheetData: List<TimesheetRowDto>
-    ): WeeklyTimesheetDto {
+    fun saveTimesheet(user: User, timesheetData: List<TimesheetRowDto>, weekStart: LocalDate): WeeklyTimesheetDto {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val existingEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
+        val existingEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
         
         validateTimesheetForModification(existingEntries, timesheetData)
         
         val (entriesToSave, entriesToDelete) = processTimesheetChanges(
-            user, tenant, weekStart, timesheetData, existingEntries
+            user, weekStart, timesheetData, existingEntries
         )
         
         executeTimesheetUpdates(entriesToSave, entriesToDelete)
         
-        val updatedEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
+        val updatedEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
         return buildWeeklyTimesheetDto(updatedEntries, weekStart)
     }
 
     @Transactional
-    fun submitTimesheet(user: User, tenant: Tenant, weekStart: LocalDate): Boolean {
+    fun submitTimesheet(user: User, weekStart: LocalDate): Boolean {
         return try {
             val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-            val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
+            val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
             
             when {
                 entries.isEmpty() -> false
@@ -122,10 +116,10 @@ class TimesheetService(
     }
 
     @Transactional
-    fun deleteTimesheetEntries(user: User, tenant: Tenant, entryIds: List<Int>): Boolean {
+    fun deleteTimesheetEntries(user: User, entryIds: List<Int>): Boolean {
         return try {
             val entries = timesheetEntryRepository.findAllById(entryIds)
-            val validEntries = filterValidEntriesForDeletion(entries, user, tenant)
+            val validEntries = filterValidEntriesForDeletion(entries, user)
             
             if (validEntries.size == entryIds.size) {
                 timesheetEntryRepository.deleteAll(validEntries)
@@ -141,25 +135,33 @@ class TimesheetService(
 
     @Transactional(readOnly = true)
     fun getMonthlyReport(
-        tenant: Tenant, 
         month: LocalDate,
         projectId: Int? = null,
         employeeId: Int? = null,
-        searchQuery: String? = null
+        searchQuery: String? = null,
+        status: String? = null
     ): MonthlyReportDto {
         val (monthStart, monthEnd) = calculateMonthRange(month)
         
+        val statusEnum = status?.let { 
+            try {
+                TimesheetStatus.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+        
         val filteredEntries = timesheetEntryRepository.findFilteredMonthlyEntries(
-            tenant, monthStart, monthEnd, projectId, employeeId, searchQuery
+            monthStart, monthEnd, projectId, employeeId, searchQuery, statusEnum
         )
         
         return buildMonthlyReportDto(month, filteredEntries)
     }
 
     @Transactional(readOnly = true)
-    fun generateTimeReportEntries(user: User, tenant: Tenant, weekStart: LocalDate): List<TimeReportEntryDto> {
+    fun generateTimeReportEntries(user: User, weekStart: LocalDate): List<TimeReportEntryDto> {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, tenant, weekStart, weekEnd)
+        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
         
         return entries
             .filter { it.hours > 0.0 }
@@ -174,6 +176,35 @@ class TimesheetService(
         return now.with(weekFields.dayOfWeek(), 1)
     }
 
+    @Transactional
+    fun approveTimesheetEntries(
+        approverUserId: Long,
+        month: LocalDate,
+        employeeId: Int? = null,
+        projectId: Int? = null
+    ): Int {
+        val (monthStart, monthEnd) = calculateMonthRange(month)
+        
+        val entriesToApprove = timesheetEntryRepository.findFilteredMonthlyEntries(
+            monthStart, monthEnd, projectId, employeeId, null, TimesheetStatus.SUBMITTED
+        )
+        
+        if (entriesToApprove.isEmpty()) {
+            return 0
+        }
+        
+        entriesToApprove.forEach { entry ->
+            entry.status = TimesheetStatus.APPROVED
+            entry.updatedAt = java.time.Instant.now()
+        }
+        
+        timesheetEntryRepository.saveAll(entriesToApprove)
+        
+        logger.info("Approved ${entriesToApprove.size} timesheet entries for month ${month.format(MONTH_FORMATTER)} by user $approverUserId")
+        
+        return entriesToApprove.size
+    }
+
     private fun buildWeeklyTimesheetDto(entries: List<TimesheetEntry>, weekStart: LocalDate): WeeklyTimesheetDto {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK - 1)
         val groupedEntries = groupEntriesByProjectActivity(entries)
@@ -184,8 +215,8 @@ class TimesheetService(
         val approvalStatus = determineApprovalStatus(entries)
 
         return WeeklyTimesheetDto(
-            weekStart = weekStart.toString(),
-            weekEnd = weekEnd.toString(),
+            weekStart = weekStart,
+            weekEnd = weekEnd,
             weekNumber = weekNumber,
             year = weekStart.year,
             rows = timesheetRows,
@@ -347,7 +378,6 @@ class TimesheetService(
 
     private fun processTimesheetChanges(
         user: User,
-        tenant: Tenant,
         weekStart: LocalDate,
         timesheetData: List<TimesheetRowDto>,
         existingEntries: List<TimesheetEntry>
@@ -366,7 +396,7 @@ class TimesheetService(
                 processedEntries.add(entryKey)
 
                 val updatedEntry = processTimesheetEntry(
-                    user, tenant, row, dayName, entryDate, 
+                    user, row, dayName, entryDate, 
                     existingEntriesMap[entryKey]
                 )
                 
@@ -387,7 +417,6 @@ class TimesheetService(
 
     private fun processTimesheetEntry(
         user: User,
-        tenant: Tenant,
         row: TimesheetRowDto,
         dayName: String,
         entryDate: LocalDate,
@@ -399,7 +428,7 @@ class TimesheetService(
         return if (existingEntry != null) {
             updateExistingEntry(existingEntry, hours, notes)
         } else {
-            createNewEntry(user, tenant, row, entryDate, hours, notes)
+            createNewEntry(user, row, entryDate, hours, notes)
         }
     }
 
@@ -428,7 +457,6 @@ class TimesheetService(
 
     private fun createNewEntry(
         user: User,
-        tenant: Tenant,
         row: TimesheetRowDto,
         entryDate: LocalDate,
         hours: Double,
@@ -439,7 +467,6 @@ class TimesheetService(
         
         return TimesheetEntry().apply {
             this.user = user
-            this.tenant = tenant
             this.project = project
             this.activity = activity
             this.entryDate = entryDate
@@ -464,12 +491,10 @@ class TimesheetService(
 
     private fun filterValidEntriesForDeletion(
         entries: List<TimesheetEntry>, 
-        user: User, 
-        tenant: Tenant
+        user: User
     ): List<TimesheetEntry> {
         return entries.filter { entry ->
             entry.user.id == user.id && 
-            entry.tenant.id == tenant.id && 
             entry.status != TimesheetStatus.APPROVED
         }
     }
@@ -497,12 +522,13 @@ class TimesheetService(
 
     private fun buildMonthlyReportEntryDto(entry: TimesheetEntry): MonthlyReportEntryDto {
         return MonthlyReportEntryDto(
-            date = entry.entryDate.toString(),
+            date = entry.entryDate,
             employeeName = entry.user.email,
             hoursWorked = entry.hours,
             projectName = entry.project?.name ?: "No Project",
             task = buildTaskDescription(entry.activity?.name, entry.description) ?: "No Task",
             notes = entry.notes,
+            status = entry.status.toString(),
             totalHoursLogged = entry.hours,
             approvedEntries = if (entry.status.isApproved()) 1 else 0,
             pendingApprovals = if (!entry.status.isApproved()) 1 else 0
@@ -534,7 +560,7 @@ class TimesheetService(
 
     private fun buildTimeReportEntryDto(entry: TimesheetEntry): TimeReportEntryDto {
         return TimeReportEntryDto(
-            date = entry.entryDate.toString(),
+            date = entry.entryDate,
             hours = entry.hours,
             projectName = entry.project?.name ?: "Unknown Project",
             activityName = entry.activity?.name ?: "Unknown Activity",
@@ -548,7 +574,6 @@ private fun Project.toDto() = ProjectDto(
     id = id,
     name = name,
     description = description,
-    color = color,
     isActive = isActive
 )
 

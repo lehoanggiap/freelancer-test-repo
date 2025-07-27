@@ -29,22 +29,18 @@ class TimesheetWebController(
         
         val weekStart = timesheetService.getCurrentWeekStart()
         
-        // Calculate previous and next week dates
         val previousWeek = weekStart.minusWeeks(1)
         val nextWeek = weekStart.plusWeeks(1)
         
-        val weeklyTimesheet = timesheetService.getWeeklyTimesheet(user, tenant, weekStart)
-        val projects = timesheetService.getActiveProjects(tenant)
-        val activities = timesheetService.getActiveActivities(tenant)
+        val weeklyTimesheet = timesheetService.getWeeklyTimesheet(user, weekStart)
+        val projects = timesheetService.getActiveProjects()
+        val activities = timesheetService.getActiveActivities()
         
-        // Generate time report data using the service
-        val timeReportEntries = timesheetService.generateTimeReportEntries(user, tenant, weekStart)
+        val timeReportEntries = timesheetService.generateTimeReportEntries(user, weekStart)
         
-        // Create week dates for headers
         val weekDates = (0..6).map { weekStart.plusDays(it.toLong()) }
         val dayNames = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         
-        // Create SaveTimesheetRequest object for form binding
         val saveTimesheetRequest = SaveTimesheetRequest(
             weekStart = weekStart,
             rows = weeklyTimesheet.rows.map { row ->
@@ -85,19 +81,25 @@ class TimesheetWebController(
     ): String {
         val tenant = Tenant().apply { id = tenantId() }
         
-        // Parse parameters or use defaults
         val selectedYear = year?.toIntOrNull() ?: LocalDate.now().year
         val selectedMonth = month?.toIntOrNull() ?: LocalDate.now().monthValue
         val reportDate = LocalDate.of(selectedYear, selectedMonth, 1)
         
-        // Load initial data
-        val monthlyReport = timesheetService.getMonthlyReport(tenant, reportDate, projectId, employeeId, search)
-        val projects = timesheetService.getActiveProjects(tenant)
-        val employees = timesheetService.getActiveEmployees(tenant)
-        
+        val monthlyReport = timesheetService.getMonthlyReport(reportDate, projectId, employeeId, search)
+        val projects = timesheetService.getActiveProjects()
+        val employees = timesheetService.getActiveEmployees()
+
         addCommonAttributesForCurrentTenant(model, "Monthly Time Report")
         model.addAttribute("monthlyReport", monthlyReport)
         model.addAttribute("reportEntries", monthlyReport.entries)
+        model.addAttribute("reportSummary", monthlyReport)
+        model.addAttribute("projects", projects)
+        model.addAttribute("employees", employees)
+        model.addAttribute("selectedMonth", String.format("%02d", selectedMonth))
+        model.addAttribute("selectedYear", selectedYear.toString())
+        model.addAttribute("selectedProjectId", projectId)
+        model.addAttribute("selectedEmployeeId", employeeId)
+        model.addAttribute("searchQuery", search)
         model.addAttribute("reportSummary", monthlyReport)
         model.addAttribute("projects", projects)
         model.addAttribute("employees", employees)
