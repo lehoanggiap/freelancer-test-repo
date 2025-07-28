@@ -34,8 +34,9 @@
                             <wa-copy-button th:value="${tenantSlug + '@ea.reai.no'}"></wa-copy-button>
                         </wa-tag>
                     </p>
+                    <wa-button variant="warning" appearance="outlined" size="small" th:text="#{voucher_upload_files}"
+                               onclick="document.getElementById('file-input').click()"/>
                 </div>
-                <wa-button appearance="plain" th:text="#{voucher_upload_files}" onclick="document.getElementById('file-input').click()"/>
             </div>
         </wa-callout>
 
