@@ -223,21 +223,9 @@ class VoucherHTMXController(
 
     @DeleteMapping("/delete/{voucherId}")
     @HxRequest
-    fun deleteVoucherHTMX(
-        @PathVariable voucherId: Long,
-        response: HttpServletResponse,
-        model: Model
-    ): String {
-        try {
-            voucherApi.deleteVoucher(voucherId)
-            
-            // Use HX-Redirect header to redirect after successful deletion
-            response.setHeader("HX-Redirect", "/voucher/overview")
-            return "fragments/empty"
-        } catch (e: Exception) {
-            model.addAttribute(calloutAttributeName, Callout.Error(e.message ?: "Error deleting voucher"))
-            return "fragments/r-callout"
-        }
+    fun deleteVoucherHTMX(@PathVariable voucherId: Long): String {
+        voucherApi.deleteVoucher(voucherId)
+        return "redirect:htmx:/voucher/overview"
     }
 
     // -------------------------------
