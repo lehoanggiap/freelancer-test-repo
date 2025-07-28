@@ -232,8 +232,12 @@
                                 </wa-input>
                             </td>
                             <td>
+                                <wa-button type="button" size="small" variant="neutral" tabindex="-1"
+                                           onclick="duplicatePostingLine(this)" style="margin-right: 4px;">
+                                    <wa-icon label="Duplicate posting row" name="copy"></wa-icon>
+                                </wa-button>
                                 <wa-button type="button" size="small" variant="danger" tabindex="-1"
-                                           th:onclick="'removePostingLine(this, ' + ${iterStat.index} + ')'">
+                                           onclick="removePostingLine(this)">
                                     <wa-icon label="Remove posting row" name="trash"></wa-icon>
                                 </wa-button>
                             </td>

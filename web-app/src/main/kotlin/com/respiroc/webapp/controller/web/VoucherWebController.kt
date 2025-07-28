@@ -169,24 +169,7 @@ class VoucherHTMXController(
         return "fragments/empty"
     }
 
-    @GetMapping("/add-posting-line")
-    @HxRequest
-    fun addPostingLineHTMX(
-        @RequestParam(defaultValue = "0") rowCounter: Int,
-        model: Model
-    ): String {
-        val vatCodes = vatService.findAllVatCodes()
-        val supportedCurrencies = currencyService.getSupportedCurrencies()
-        val initialDate = LocalDate.now()
 
-        model.addAttribute("rowCounter", rowCounter)
-        model.addAttribute("defaultVatCode", vatCodes.first().code)
-        model.addAttribute("companyCurrencyCode", countryCode())
-        model.addAttribute("supportedCurrencies", supportedCurrencies)
-        model.addAttribute("initialDate", initialDate)
-
-        return "fragments/posting-line-row"
-    }
 
     @PostMapping("/update-balance")
     @HxRequest
