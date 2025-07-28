@@ -38,3 +38,11 @@ Use the modern Temporal API, if time,zone, calendar functionality is needed
 Only use JS when it is absolutely needed for user experience
 Prefer to use HTML fragments and get HTML from backend when possible. 
 Thymeleaf supports fragments and can be used to replace part of the page with new data
+* Avoid to manually make fetch requests, and instead use hx-get, hx-post, hx-delete
+with hx-include selector that sends the relevant data to the server
+* If you're not sure about HTMX API, check: https://htmx.org/reference/
+* For spacing, colors, focus, shadows, typography. Use design tokens: https://webawesome.com/docs/tokens/
+* For layout, use layout classes provided here: https://webawesome.com/docs/layout/ 
+before creating our own custom layout classes. 
+* Before creating custom CSS, see if we can have the same effect from a component: https://webawesome.com/docs/components/
+For example wa-card can replace the need for custom "container" classes
