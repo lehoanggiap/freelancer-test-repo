@@ -21,7 +21,7 @@
           th:hx-swap="'innerHTML'"
           th:hx-encoding="'multipart/form-data'"
           style="display:none">
-        <input type="file" name="files" id="file-input" multiple/>
+        <input type="file" name="files" id="file-input" multiple onchange="htmx.trigger(this.form, 'submit')"/>
         <input type="hidden" name="voucherId" th:value="${voucherId}"/>
     </form>
 
@@ -45,7 +45,7 @@
             <wa-card>
                 <div slot="header" class="wa-split">
                     <h4 th:text="${'Voucher ' + voucher.displayNumber}"/>
-                    <wa-button appearance="plain" th:text="#{voucher_upload_files}"/>
+                    <wa-button appearance="plain" th:text="#{voucher_upload_files}" onclick="document.getElementById('file-input').click()"/>
                 </div>
 
                 <!-- Voucher Information - Date and Description on same line -->
