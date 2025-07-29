@@ -329,27 +329,6 @@ function updateBalance() {
     });
 }
 
-function showValidationError(message) {
-    const messagesDiv = document.getElementById('form-messages');
-    if (messagesDiv) {
-        messagesDiv.innerHTML = `<div style="margin-bottom: var(--wa-space-m);">
-            <wa-callout variant="danger" open>
-                <wa-icon slot="icon" name="circle-exclamation" variant="regular"></wa-icon>
-                <span>${message}</span>
-            </wa-callout></div>`;
-    }
-}
-
-document.addEventListener('htmx:responseError', (e) => {
-    console.error('HTMX Error:', e.detail);
-    showValidationError('An error occurred. Please try again.');
-});
-
-document.addEventListener('htmx:sendError', (e) => {
-    console.error('HTMX Network Error:', e.detail);
-    showValidationError('Network error. Please check your connection.');
-});
-
 document.addEventListener('change', (e) => {
     if (e.target.matches('input[type="number"], select, wa-input, wa-select')) {
         setTimeout(updateBalance, 100);
@@ -357,11 +336,6 @@ document.addEventListener('change', (e) => {
 });
 
 document.addEventListener('htmx:configRequest', (e) => {
-    const tenantId = new URLSearchParams(window.location.search).get('tenantId');
-    if (tenantId && e.detail.path.includes('/htmx/')) {
-        e.detail.parameters.tenantId = tenantId;
-    }
-
     if (e.detail.elt && e.detail.elt.tagName === 'FORM') {
         const comboboxes = e.detail.elt.querySelectorAll('r-combobox');
         comboboxes.forEach(combobox => {
