@@ -284,6 +284,7 @@ function removePostingLine(button) {
 
 function renumberPostingRows() {
     const rows = document.querySelectorAll('.posting-line-row');
+    
     rows.forEach((row, index) => {
         row.id = `posting-line-row-${index}`;
 
@@ -293,7 +294,7 @@ function renumberPostingRows() {
             hiddenRowNumber.value = index;
         }
 
-        const formFields = row.querySelectorAll('input, select, r-combobox');
+        const formFields = row.querySelectorAll('input, select, r-combobox, wa-input, wa-select');
         formFields.forEach(field => {
             if (field.name) {
                 field.name = field.name.replace(/postingLines\[\d+\]/, `postingLines[${index}]`);
