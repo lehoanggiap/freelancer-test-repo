@@ -240,13 +240,30 @@ async function addPostingLine(sourceRow = null) {
     if (defaultValues.creditAccount) creditAccountCombo.value = defaultValues.creditAccount;
     if (defaultValues.creditVatCode) creditVatCombo.value = defaultValues.creditVatCode;
     
-    // Add change listeners
+    // Add change listeners to comboboxes
     [debitAccountCombo, debitVatCombo, creditAccountCombo, creditVatCombo].forEach(combo => {
         combo.addEventListener('change', () => updateBalance());
     });
     
-    rowCounter++;
-    updateBalance();
+    // Add change listeners to other input fields
+    const amountInput = newRow.querySelector('[name*="amount"]');
+    const currencySelect = newRow.querySelector('[name*="currency"]');
+    const descriptionInput = newRow.querySelector('[name*="description"]');
+    const dateInput = newRow.querySelector('[name*="postingDate"]');
+    
+    [amountInput, currencySelect, descriptionInput, dateInput].forEach(input => {
+        if (input) {
+            input.addEventListener('change', () => updateBalance());
+            input.addEventListener('input', () => updateBalance());
+        }
+    });
+    
+        rowCounter++;
+    
+    // Add slight delay to ensure DOM is updated before calculating balance
+    setTimeout(() => {
+        updateBalance();
+    }, 100);
 }
 
 function duplicatePostingLine(button) {
