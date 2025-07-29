@@ -1,6 +1,4 @@
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
@@ -35,11 +33,11 @@ subprojects {
         }
     }
 
-
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-reflect")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("org.springframework.boot:spring-boot-starter-validation")
+        "implementation"("org.springframework.boot:spring-boot-starter-data-jpa")
     }
 
     tasks.withType<Test> {
