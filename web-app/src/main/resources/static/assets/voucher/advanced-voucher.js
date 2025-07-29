@@ -278,7 +278,9 @@ function removePostingLine(button) {
     if (rows.length > 1) {
         row.remove();
         renumberPostingRows();
-        updateBalance();
+        setTimeout(() => {
+            updateBalance();
+        }, 100);
     }
 }
 
@@ -298,6 +300,10 @@ function renumberPostingRows() {
         formFields.forEach(field => {
             if (field.name) {
                 field.name = field.name.replace(/postingLines\[\d+\]/, `postingLines[${index}]`);
+
+                if (field.tagName === 'WA-INPUT' || field.tagName === 'WA-SELECT') {
+                    field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
         });
 
