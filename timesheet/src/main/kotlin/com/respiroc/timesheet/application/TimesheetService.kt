@@ -1,14 +1,14 @@
 package com.respiroc.timesheet.application
 
 import com.respiroc.user.domain.model.User
-import com.respiroc.timesheet.application.dto.ActivityDto
-import com.respiroc.timesheet.application.dto.EmployeeDto
-import com.respiroc.timesheet.application.dto.MonthlyReportDto
-import com.respiroc.timesheet.application.dto.MonthlyReportEntryDto
-import com.respiroc.timesheet.application.dto.ProjectDto
-import com.respiroc.timesheet.application.dto.TimeReportEntryDto
-import com.respiroc.timesheet.application.dto.TimesheetRowDto
-import com.respiroc.timesheet.application.dto.WeeklyTimesheetDto
+import com.respiroc.timesheet.application.payload.ActivityPayload
+import com.respiroc.timesheet.application.payload.EmployeePayload
+import com.respiroc.timesheet.application.payload.MonthlyReportPayload
+import com.respiroc.timesheet.application.payload.MonthlyReportEntryPayload
+import com.respiroc.timesheet.application.payload.ProjectPayload
+import com.respiroc.timesheet.application.payload.TimeReportEntryPayload
+import com.respiroc.timesheet.application.payload.TimesheetRowPayload
+import com.respiroc.timesheet.application.payload.WeeklyTimesheetPayload
 import com.respiroc.timesheet.domain.model.Activity
 import com.respiroc.timesheet.domain.model.ApprovalStatusInfo
 import com.respiroc.timesheet.domain.model.MonthlyStatistics
@@ -20,6 +20,7 @@ import com.respiroc.timesheet.domain.repository.ActivityRepository
 import com.respiroc.timesheet.domain.repository.ProjectRepository
 import com.respiroc.timesheet.domain.repository.TimesheetEntryRepository
 import com.respiroc.util.context.ContextAwareApi
+import com.respiroc.util.exception.ApprovedTimesheetModificationException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,8 +29,6 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-
-class ApprovedTimesheetModificationException(message: String) : IllegalStateException(message)
 
 @Service
 @Transactional
@@ -48,19 +47,19 @@ class TimesheetService(
     }
 
     @Transactional(readOnly = true)
-    fun getActiveProjects(): List<ProjectDto> =
-        projectRepository.findActiveProjectsByTenant().map(Project::toDto)
+    fun getActiveProjects(): List<ProjectPayload> =
+        projectRepository.findActiveProjects().map(Project::toPayload)
 
     @Transactional(readOnly = true)
-    fun getActiveActivities(projectId: Int? = null): List<ActivityDto> {
+    fun getActiveActivities(projectId: Int? = null): List<ActivityPayload> {
         val project = projectId?.let { projectRepository.findById(it).orElse(null) }
-        return activityRepository.findActiveActivitiesForProject(project).map(Activity::toDto)
+        return activityRepository.findActiveActivitiesForProject(project).map(Activity::toPayload)
     }
 
     @Transactional(readOnly = true)
-    fun getActiveEmployees(): List<EmployeeDto> =
-        timesheetEntryRepository.findDistinctUsersByTenant().map { user ->
-            EmployeeDto(
+    fun getActiveEmployees(): List<EmployeePayload> =
+        timesheetEntryRepository.findDistinctUsers().map { user ->
+            EmployeePayload(
                 id = user.id,
                 name = user.email,
                 email = user.email
@@ -68,16 +67,21 @@ class TimesheetService(
         }
 
     @Transactional(readOnly = true)
-    fun getWeeklyTimesheet(user: User, weekStart: LocalDate): WeeklyTimesheetDto {
+    fun getWeeklyTimesheet(user: User, weekStart: LocalDate): WeeklyTimesheetPayload {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
-        return buildWeeklyTimesheetDto(entries, weekStart)
+        val entries = timesheetEntryRepository.findByUserAndDateRange(user, weekStart, weekEnd)
+        
+        return if (entries.isEmpty()) {
+            createEmptyWeeklyTimesheetDto(weekStart)
+        } else {
+            buildWeeklyTimesheetDto(entries, weekStart)
+        }
     }
 
     @Transactional
-    fun saveTimesheet(user: User, timesheetData: List<TimesheetRowDto>, weekStart: LocalDate): WeeklyTimesheetDto {
+    fun saveTimesheet(user: User, timesheetData: List<TimesheetRowPayload>, weekStart: LocalDate): WeeklyTimesheetPayload {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val existingEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
+        val existingEntries = timesheetEntryRepository.findByUserAndDateRange(user, weekStart, weekEnd)
         
         validateTimesheetForModification(existingEntries, timesheetData)
         
@@ -87,7 +91,7 @@ class TimesheetService(
         
         executeTimesheetUpdates(entriesToSave, entriesToDelete)
         
-        val updatedEntries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
+        val updatedEntries = timesheetEntryRepository.findByUserAndDateRange(user, weekStart, weekEnd)
         return buildWeeklyTimesheetDto(updatedEntries, weekStart)
     }
 
@@ -95,7 +99,7 @@ class TimesheetService(
     fun submitTimesheet(user: User, weekStart: LocalDate): Boolean {
         return try {
             val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-            val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
+            val entries = timesheetEntryRepository.findByUserAndDateRange(user, weekStart, weekEnd)
             
             when {
                 entries.isEmpty() -> false
@@ -140,13 +144,14 @@ class TimesheetService(
         employeeId: Int? = null,
         searchQuery: String? = null,
         status: String? = null
-    ): MonthlyReportDto {
+    ): MonthlyReportPayload {
         val (monthStart, monthEnd) = calculateMonthRange(month)
         
         val statusEnum = status?.let { 
             try {
                 TimesheetStatus.valueOf(it)
             } catch (e: IllegalArgumentException) {
+                logger.error(e.message)
                 null
             }
         }
@@ -159,9 +164,9 @@ class TimesheetService(
     }
 
     @Transactional(readOnly = true)
-    fun generateTimeReportEntries(user: User, weekStart: LocalDate): List<TimeReportEntryDto> {
+    fun generateTimeReportEntries(user: User, weekStart: LocalDate): List<TimeReportEntryPayload> {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK)
-        val entries = timesheetEntryRepository.findByUserAndTenantAndDateRange(user, weekStart, weekEnd)
+        val entries = timesheetEntryRepository.findByUserAndDateRange(user, weekStart, weekEnd)
         
         return entries
             .filter { it.hours > 0.0 }
@@ -205,7 +210,7 @@ class TimesheetService(
         return entriesToApprove.size
     }
 
-    private fun buildWeeklyTimesheetDto(entries: List<TimesheetEntry>, weekStart: LocalDate): WeeklyTimesheetDto {
+    private fun buildWeeklyTimesheetDto(entries: List<TimesheetEntry>, weekStart: LocalDate): WeeklyTimesheetPayload {
         val weekEnd = weekStart.plusDays(DAYS_IN_WEEK - 1)
         val groupedEntries = groupEntriesByProjectActivity(entries)
         val timesheetRows = buildTimesheetRows(groupedEntries, weekStart)
@@ -214,7 +219,7 @@ class TimesheetService(
         val weekNumber = calculateWeekNumber(weekStart)
         val approvalStatus = determineApprovalStatus(entries)
 
-        return WeeklyTimesheetDto(
+        return WeeklyTimesheetPayload(
             weekStart = weekStart,
             weekEnd = weekEnd,
             weekNumber = weekNumber,
@@ -231,6 +236,28 @@ class TimesheetService(
         )
     }
 
+    private fun createEmptyWeeklyTimesheetDto(weekStart: LocalDate): WeeklyTimesheetPayload {
+        val weekEnd = weekStart.plusDays(DAYS_IN_WEEK - 1)
+        val weekNumber = calculateWeekNumber(weekStart)
+        val emptyDayTotals = DAY_NAMES.associateWith { 0.0 }
+
+        return WeeklyTimesheetPayload(
+            weekStart = weekStart,
+            weekEnd = weekEnd,
+            weekNumber = weekNumber,
+            year = weekStart.year,
+            rows = emptyList(),
+            dayTotals = emptyDayTotals,
+            grandTotal = 0.0,
+            isSubmitted = false,
+            approvalStatus = null,
+            submittedAt = null,
+            approvedAt = null,
+            approvedBy = null,
+            rejectionReason = null
+        )
+    }
+
     private fun groupEntriesByProjectActivity(entries: List<TimesheetEntry>): Map<Pair<Int?, Int?>, List<TimesheetEntry>> {
         return entries
             .groupBy { Pair(it.project?.id, it.activity?.id) }
@@ -242,14 +269,14 @@ class TimesheetService(
     private fun buildTimesheetRows(
         groupedEntries: Map<Pair<Int?, Int?>, List<TimesheetEntry>>, 
         weekStart: LocalDate
-    ): List<TimesheetRowDto> {
-        val rows = mutableListOf<TimesheetRowDto>()
+    ): List<TimesheetRowPayload> {
+        val rows = mutableListOf<TimesheetRowPayload>()
         var rowId = 0
 
         groupedEntries.forEach { (projectActivityPair, entryList) ->
             val rowData = processTimesheetRowData(entryList, weekStart)
             
-            rows.add(TimesheetRowDto(
+            rows.add(TimesheetRowPayload(
                 rowId = rowId++,
                 projectId = projectActivityPair.first,
                 activityId = projectActivityPair.second,
@@ -259,11 +286,7 @@ class TimesheetService(
             ))
         }
 
-        return if (rows.isEmpty()) {
-            listOf(createEmptyTimesheetRow(rowId))
-        } else {
-            rows
-        }
+        return rows
     }
 
     private fun processTimesheetRowData(entryList: List<TimesheetEntry>, weekStart: LocalDate): TimesheetRowData {
@@ -283,25 +306,7 @@ class TimesheetService(
         return TimesheetRowData(hours, comments, entryIds)
     }
 
-    private fun createEmptyTimesheetRow(rowId: Int): TimesheetRowDto {
-        val emptyHours = mutableMapOf<String, Double>()
-        val emptyComments = mutableMapOf<String, String?>()
-        
-        DAY_NAMES.forEach { dayName ->
-            emptyHours[dayName] = 0.0
-            emptyComments[dayName] = null
-        }
-        
-        return TimesheetRowDto(
-            rowId = rowId,
-            projectId = null,
-            activityId = null,
-            hours = emptyHours,
-            comments = emptyComments
-        )
-    }
-
-    private fun calculateDayTotals(rows: List<TimesheetRowDto>): Map<String, Double> {
+    private fun calculateDayTotals(rows: List<TimesheetRowPayload>): Map<String, Double> {
         val dayTotals = mutableMapOf<String, Double>()
         
         DAY_NAMES.forEach { day ->
@@ -339,7 +344,7 @@ class TimesheetService(
 
     private fun validateTimesheetForModification(
         existingEntries: List<TimesheetEntry>,
-        timesheetData: List<TimesheetRowDto>
+        timesheetData: List<TimesheetRowPayload>
     ) {
         val hasApprovedEntries = existingEntries.any { it.status == TimesheetStatus.APPROVED }
         if (hasApprovedEntries) {
@@ -351,14 +356,14 @@ class TimesheetService(
         validateNoDuplicateProjectActivityPairs(timesheetData)
     }
 
-    private fun validateProjectActivitySelection(timesheetData: List<TimesheetRowDto>) {
+    private fun validateProjectActivitySelection(timesheetData: List<TimesheetRowPayload>) {
         timesheetData.forEach { row ->
             require(row.projectId != null) { "Project must be selected for all timesheet rows" }
             require(row.activityId != null) { "Activity must be selected for all timesheet rows" }
         }
     }
 
-    private fun validateHoursRange(timesheetData: List<TimesheetRowDto>) {
+    private fun validateHoursRange(timesheetData: List<TimesheetRowPayload>) {
         timesheetData.forEach { row ->
             row.hours.values.forEach { hours ->
                 require(hours >= 0) { "Hours must be positive" }
@@ -367,7 +372,7 @@ class TimesheetService(
         }
     }
 
-    private fun validateNoDuplicateProjectActivityPairs(timesheetData: List<TimesheetRowDto>) {
+    private fun validateNoDuplicateProjectActivityPairs(timesheetData: List<TimesheetRowPayload>) {
         val projectActivityPairs = timesheetData.map { Pair(it.projectId, it.activityId) }
         val uniquePairs = projectActivityPairs.toSet()
         
@@ -379,7 +384,7 @@ class TimesheetService(
     private fun processTimesheetChanges(
         user: User,
         weekStart: LocalDate,
-        timesheetData: List<TimesheetRowDto>,
+        timesheetData: List<TimesheetRowPayload>,
         existingEntries: List<TimesheetEntry>
     ): Pair<List<TimesheetEntry>, List<TimesheetEntry>> {
         val existingEntriesMap = existingEntries.associateBy { 
@@ -417,7 +422,7 @@ class TimesheetService(
 
     private fun processTimesheetEntry(
         user: User,
-        row: TimesheetRowDto,
+        row: TimesheetRowPayload,
         dayName: String,
         entryDate: LocalDate,
         existingEntry: TimesheetEntry?
@@ -457,7 +462,7 @@ class TimesheetService(
 
     private fun createNewEntry(
         user: User,
-        row: TimesheetRowDto,
+        row: TimesheetRowPayload,
         entryDate: LocalDate,
         hours: Double,
         notes: String?
@@ -505,11 +510,11 @@ class TimesheetService(
         return Pair(monthStart, monthEnd)
     }
 
-    private fun buildMonthlyReportDto(month: LocalDate, entries: List<TimesheetEntry>): MonthlyReportDto {
+    private fun buildMonthlyReportDto(month: LocalDate, entries: List<TimesheetEntry>): MonthlyReportPayload {
         val reportEntries = entries.map { buildMonthlyReportEntryDto(it) }
         val statistics = calculateMonthlyStatistics(entries)
         
-        return MonthlyReportDto(
+        return MonthlyReportPayload(
             month = month.format(MONTH_FORMATTER),
             year = month.year,
             entries = reportEntries,
@@ -520,8 +525,8 @@ class TimesheetService(
         )
     }
 
-    private fun buildMonthlyReportEntryDto(entry: TimesheetEntry): MonthlyReportEntryDto {
-        return MonthlyReportEntryDto(
+    private fun buildMonthlyReportEntryDto(entry: TimesheetEntry): MonthlyReportEntryPayload {
+        return MonthlyReportEntryPayload(
             date = entry.entryDate,
             employeeName = entry.user.email,
             hoursWorked = entry.hours,
@@ -558,8 +563,8 @@ class TimesheetService(
         }
     }
 
-    private fun buildTimeReportEntryDto(entry: TimesheetEntry): TimeReportEntryDto {
-        return TimeReportEntryDto(
+    private fun buildTimeReportEntryDto(entry: TimesheetEntry): TimeReportEntryPayload {
+        return TimeReportEntryPayload(
             date = entry.entryDate,
             hours = entry.hours,
             projectName = entry.project?.name ?: "Unknown Project",
@@ -570,14 +575,14 @@ class TimesheetService(
     }
 }
 
-private fun Project.toDto() = ProjectDto(
+private fun Project.toPayload() = ProjectPayload(
     id = id,
     name = name,
     description = description,
     isActive = isActive
 )
 
-private fun Activity.toDto() = ActivityDto(
+private fun Activity.toPayload() = ActivityPayload(
     id = id,
     name = name,
     description = description,

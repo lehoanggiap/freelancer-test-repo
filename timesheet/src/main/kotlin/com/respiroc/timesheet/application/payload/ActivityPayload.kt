@@ -1,6 +1,6 @@
-package com.respiroc.timesheet.application.dto
+package com.respiroc.timesheet.application.payload
 
-data class ActivityDto(
+data class ActivityPayload(
     val id: Int,
     val name: String,
     val description: String? = null,

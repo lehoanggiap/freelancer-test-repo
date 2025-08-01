@@ -1,8 +1,8 @@
-package com.respiroc.timesheet.application.dto
+package com.respiroc.timesheet.application.payload
 
 import java.time.LocalDate
 
-data class TimeReportEntryDto(
+data class TimeReportEntryPayload(
     val date: LocalDate,
     val projectName: String,
     val activityName: String?,

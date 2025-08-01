@@ -1,11 +1,3 @@
-/* Timesheet Container */
-.r-timesheet-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--wa-space-l);
-}
-
-/* Header Section */
 .r-timesheet-header {
     display: flex;
     justify-content: space-between;
@@ -66,20 +58,17 @@
     gap: var(--wa-space-s);
 }
 
-/* Ensure save button and indicator have consistent height */
 #r-save-button,
 #r-saved-indicator {
-    height: 28px; /* Match wa-button small size height */
+    height: 28px;
     display: flex;
     align-items: center;
 }
 
-/* Minimal saved indicator styling - let Web Awesome handle most styling */
 #r-saved-indicator {
     transition: all 0.2s ease-in-out;
 }
 
-/* Date Range */
 .r-date-range {
     text-align: center;
     font-size: var(--wa-font-size-s);
@@ -87,7 +76,6 @@
     margin-bottom: var(--wa-space-l);
 }
 
-/* Timesheet Table */
 .r-timesheet-wrapper {
     overflow-x: auto;
     border: 1px solid var(--wa-color-surface-border);
@@ -118,8 +106,8 @@
 .r-project-header,
 .r-activity-header {
     text-align: left;
-    width: 180px; /* Match the cell width */
-    min-width: 160px; /* Match the minimum cell width */
+    width: 180px;
+    min-width: 160px;
 }
 
 .r-day-header {
@@ -145,7 +133,6 @@
     min-width: 50px;
 }
 
-/* Table Rows */
 .r-timesheet-row td {
     padding: var(--wa-space-xs);
     border-bottom: 1px solid var(--wa-color-surface-border);
@@ -159,8 +146,8 @@
 
 .r-project-cell,
 .r-activity-cell {
-    width: 180px; /* Increased from 120px for better full-width display */
-    min-width: 160px; /* Ensure minimum width on smaller screens */
+    width: 180px;
+    min-width: 160px;
 }
 
 .r-day-cell {
@@ -173,24 +160,21 @@
     text-align: center;
 }
 
-/* Dropdown Styling */
 .r-project-select,
 .r-activity-select {
     width: 100%;
-    min-width: 160px; /* Ensure dropdowns are wide enough */
+    min-width: 160px;
     font-size: var(--wa-font-size-xs);
 }
 
-/* Improve dropdown appearance on larger screens */
 @media (min-width: 1200px) {
     .r-project-select,
     .r-activity-select {
         min-width: 180px;
-        font-size: var(--wa-font-size-s); /* Slightly larger text on big screens */
+        font-size: var(--wa-font-size-s);
     }
 }
 
-/* Legacy Input Styling (kept for backward compatibility) */
 .r-project-input,
 .r-activity-input {
     width: 100%;
@@ -240,7 +224,6 @@
     color: var(--wa-color-text-normal);
 }
 
-/* New Row and Totals */
 .r-new-row td {
     padding: var(--wa-space-s);
     text-align: left;
@@ -282,19 +265,16 @@
     background: var(--wa-color-surface-lowered);
 }
 
-/* Save Feedback */
 .r-save-feedback {
     margin-top: var(--wa-space-s);
     text-align: center;
 }
 
-/* Completion Section */
 .r-completion-section {
     margin: var(--wa-space-l) 0;
     text-align: left;
 }
 
-/* Time Report Section */
 .r-time-report {
     margin-top: var(--wa-space-xl);
 }
@@ -347,12 +327,7 @@
     background: var(--wa-color-surface-raised);
 }
 
-/* Responsive Design */
 @media (max-width: 968px) {
-    .r-timesheet-container {
-        padding: var(--wa-space-m);
-    }
-    
     .r-timesheet-header {
         flex-direction: column;
         gap: var(--wa-space-m);
@@ -432,55 +407,19 @@
     }
 }
 
-/* Loading States */
 .htmx-request .r-saved-indicator {
     opacity: 0.5;
 }
 
-/* .htmx-request::after {
-    content: " Saving...";
-    color: var(--wa-color-gray-50);
-} */
-
-/* Hover Effects */
 .r-timesheet-row:hover {
     background: var(--wa-color-surface-raised);
 }
 
-.r-nav-button:hover {
-    background: var(--wa-color-surface-lowered);
-}
-
-/* Focus States */
 wa-input:focus-within {
     outline: 2px solid var(--wa-color-focus);
     outline-offset: 1px;
 }
 
-/* Custom scrollbar for better UX */
-.r-timesheet-wrapper::-webkit-scrollbar,
-.r-time-report-wrapper::-webkit-scrollbar {
-    height: 8px;
-}
-
-.r-timesheet-wrapper::-webkit-scrollbar-track,
-.r-time-report-wrapper::-webkit-scrollbar-track {
-    background: var(--wa-color-surface-lowered);
-    border-radius: var(--wa-border-radius-s);
-}
-
-.r-timesheet-wrapper::-webkit-scrollbar-thumb,
-.r-time-report-wrapper::-webkit-scrollbar-thumb {
-    background: var(--wa-color-neutral-fill-quiet);
-    border-radius: var(--wa-border-radius-s);
-}
-
-.r-timesheet-wrapper::-webkit-scrollbar-thumb:hover,
-.r-time-report-wrapper::-webkit-scrollbar-thumb:hover {
-    background: var(--wa-color-neutral-fill-normal);
-}
-
-/* Approval Section */
 .r-completion-section {
     margin: var(--wa-space-l) 0;
     padding: 0;
@@ -524,7 +463,6 @@ wa-input:focus-within {
     font-size: 16px;
 }
 
-/* Approval status specific styling */
 #r-approval-indicator[variant="warning"] {
     background-color: var(--wa-color-warning-fill-quiet) !important;
     color: var(--wa-color-warning-on-quiet) !important;
@@ -543,7 +481,6 @@ wa-input:focus-within {
     border-color: var(--wa-color-danger-border-normal) !important;
 }
 
-/* Submit Feedback Messages */
 .r-submit-feedback, .r-delete-feedback {
     margin: var(--wa-space-m) 0;
     padding: var(--wa-space-s) var(--wa-space-m);
@@ -565,6 +502,18 @@ wa-input:focus-within {
     background: var(--wa-color-danger-fill-quiet);
     border: 1px solid var(--wa-color-danger-border-normal);
     color: var(--wa-color-danger-on-quiet);
+}
+
+.r-error-container {
+    margin-bottom: var(--wa-space-s);
+}
+
+.r-error-container .r-error-message {
+    animation: slideIn 0.3s ease-out;
+}
+
+.r-error-container wa-callout {
+    margin-bottom: var(--wa-space-xs);
 }
 
 @keyframes slideIn {

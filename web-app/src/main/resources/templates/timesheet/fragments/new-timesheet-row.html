@@ -1,0 +1,78 @@
+<tr class="r-timesheet-row" th:attr="data-row-id=${newRowId}">
+    <input type="hidden" th:name="|rows[${newRowIndex}].rowId|" th:value="${newRowId}"/>
+    
+    <td class="r-project-cell">
+        <wa-select size="small" th:name="|rows[${newRowIndex}].projectId|" class="r-project-select">
+            <wa-option value="">Select Project</wa-option>
+            <wa-option th:each="project : ${projects}" 
+                      th:value="${project.id}" 
+                      th:text="${project.name}">Project Name</wa-option>
+        </wa-select>
+    </td>
+    <td class="r-activity-cell">
+        <wa-select size="small" th:name="|rows[${newRowIndex}].activityId|" class="r-activity-select">
+            <wa-option value="">Select Activity</wa-option>
+            <wa-option th:each="activity : ${activities}" 
+                      th:value="${activity.id}" 
+                      th:text="${activity.name}">Activity Name</wa-option>
+        </wa-select>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[mon]|" class="r-hours-input" 
+                 th:attr="data-day=mon,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[mon]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[tue]|" class="r-hours-input" 
+                 th:attr="data-day=tue,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[tue]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[wed]|" class="r-hours-input" 
+                 th:attr="data-day=wed,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[wed]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[thu]|" class="r-hours-input" 
+                 th:attr="data-day=thu,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[thu]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[fri]|" class="r-hours-input" 
+                 th:attr="data-day=fri,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[fri]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[sat]|" class="r-hours-input" 
+                 th:attr="data-day=sat,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[sat]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-day-cell">
+        <wa-input type="number" size="small" min="0" max="24" step="0.25" 
+                 th:name="|rows[${newRowIndex}].hours[sun]|" class="r-hours-input" 
+                 th:attr="data-day=sun,data-row=${newRowId}" value="0"></wa-input>
+        <wa-input size="small" placeholder="Comment" 
+                 th:name="|rows[${newRowIndex}].comments[sun]|" class="r-comment-input" value=""></wa-input>
+    </td>
+    <td class="r-total-cell">
+        <span class="r-row-total" th:attr="data-row=${newRowId}">0.0</span>
+    </td>
+    <td class="r-remain-cell">
+        <wa-button size="small" variant="danger" appearance="outlined" 
+                  th:onclick="|removeRow(${newRowId})|" type="button">
+            <wa-icon name="x"></wa-icon>
+        </wa-button>
+    </td>
+</tr>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="timesheet-container" class="r-timesheet-container">
-    <div class="r-timesheet-container">
+<div th:fragment="timesheet-container" class="wa-card" id="timesheet-container">
+    <div class="wa-card">
         <!-- Header Section -->
         <div class="r-timesheet-header" id="r-timesheet-header">
             <div class="r-period-navigation">
                 <wa-button size="small" variant="neutral" appearance="outlined" 
                            hx-get="/htmx/timesheet/week"
                            th:hx-vals="|{&quot;weekStart&quot;: &quot;${previousWeek}&quot;}|"
-                           hx-target=".r-timesheet-container"
+                           hx-target="#timesheet-container"
                            hx-swap="outerHTML"
                            class="r-nav-button">
                     <wa-icon name="chevron-left"></wa-icon>
@@ -22,7 +22,7 @@
                 <wa-button size="small" variant="neutral" appearance="outlined" 
                            hx-get="/htmx/timesheet/week"
                            th:hx-vals="|{&quot;weekStart&quot;: &quot;${nextWeek}&quot;}|"
-                           hx-target=".r-timesheet-container"
+                           hx-target="#timesheet-container"
                            hx-swap="outerHTML"
                            class="r-nav-button">
                     <wa-icon name="chevron-right"></wa-icon>
@@ -62,7 +62,7 @@
 
         <!-- Timesheet Main Content -->
         <div id="timesheet-main-container">
-            <div th:insert="~{timesheet/fragments/timesheet-main-content}"></div>
+            <div th:insert="~{timesheet/fragments/timesheet-main-content :: timesheet-main-content}"></div>
         </div>
     </div>
 </div>

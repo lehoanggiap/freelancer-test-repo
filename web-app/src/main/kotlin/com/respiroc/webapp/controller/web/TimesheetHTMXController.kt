@@ -1,7 +1,9 @@
 package com.respiroc.webapp.controller.web
 
 import com.respiroc.timesheet.application.TimesheetService
-import com.respiroc.timesheet.application.ApprovedTimesheetModificationException
+import com.respiroc.util.exception.ApprovedTimesheetModificationException
+
+import com.respiroc.timesheet.domain.model.TimesheetStatus
 import com.respiroc.user.domain.model.User
 import com.respiroc.webapp.controller.BaseController
 import com.respiroc.webapp.controller.request.SaveTimesheetRequest
@@ -12,6 +14,7 @@ import com.respiroc.webapp.controller.rest.request.SubmitTimesheetRequest
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -56,9 +59,8 @@ class TimesheetHTMXController(
         val user = User().apply { id = user().id }
         
         try {
-            // Check for validation errors
             if (bindingResult.hasErrors()) {
-                response.status = 400
+                response.status = HttpStatus.BAD_REQUEST.value()
                 model.addAttribute(errorMessageAttributeName, "Validation errors occurred")
                 loadTimesheetData(saveRequest.weekStart, model)
                 return "timesheet/fragments/timesheet-main-content"
@@ -70,23 +72,26 @@ class TimesheetHTMXController(
                 saveRequest.weekStart
             )
             
-            // Return updated timesheet content
             loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
             
         } catch (e: ApprovedTimesheetModificationException) {
+            response.status = HttpStatus.CONFLICT.value()
             model.addAttribute(errorMessageAttributeName, "Cannot modify approved timesheet")
             loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: IllegalArgumentException) {
+            response.status = HttpStatus.BAD_REQUEST.value()
             model.addAttribute(errorMessageAttributeName, "Invalid timesheet data: ${e.message}")
             loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: IllegalStateException) {
+            response.status = HttpStatus.BAD_REQUEST.value()
             model.addAttribute(errorMessageAttributeName, "Invalid timesheet state: ${e.message}")
             loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
         } catch (e: Exception) {
+            response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
             model.addAttribute(errorMessageAttributeName, "Save failed: ${e.message}")
             loadTimesheetData(saveRequest.weekStart, model)
             return "timesheet/fragments/timesheet-main-content"
@@ -108,7 +113,6 @@ class TimesheetHTMXController(
                 model.addAttribute(errorMessageAttributeName, "Failed to submit timesheet - no timesheet entries found")
             }
             
-            // Return updated submit section fragment only
             loadTimesheetData(submitRequest.weekStart, model)
             return "timesheet/fragments/timesheet-submit"
             
@@ -133,7 +137,6 @@ class TimesheetHTMXController(
         val user = User().apply { id = user().id }
         
         try {
-            // Check for validation errors
             if (bindingResult.hasErrors()) {
                 model.addAttribute(errorMessageAttributeName, "Validation errors occurred")
                 loadTimesheetData(deleteRequest.weekStart, model)
@@ -159,7 +162,6 @@ class TimesheetHTMXController(
     private fun loadTimesheetData(weekStart: LocalDate, model: Model) {
         val user = User().apply { id = user().id }
         
-        // Calculate previous and next week dates
         val previousWeek = weekStart.minusWeeks(1)
         val nextWeek = weekStart.plusWeeks(1)
         
@@ -168,11 +170,9 @@ class TimesheetHTMXController(
         val activities = timesheetService.getActiveActivities()
         val timeReportEntries = timesheetService.generateTimeReportEntries(user, weekStart)
         
-        // Create week dates for headers
         val weekDates = (0..6).map { weekStart.plusDays(it.toLong()) }
         val dayNames = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         
-        // Create SaveTimesheetRequest object for form binding
         val saveTimesheetRequest = SaveTimesheetRequest(
             weekStart = weekStart,
             rows = weeklyTimesheet.rows.map { row ->
@@ -210,7 +210,6 @@ class TimesheetHTMXController(
         @RequestParam(required = false) status: String?,
         model: Model
     ): String {
-        // Parse month/year or default to current
         val selectedYear = year?.toIntOrNull() ?: LocalDate.now().year
         val selectedMonth = month?.toIntOrNull() ?: LocalDate.now().monthValue
         val reportDate = LocalDate.of(selectedYear, selectedMonth, 1)
@@ -252,6 +251,49 @@ class TimesheetHTMXController(
         } catch (e: Exception) {
             model.addAttribute(errorMessageAttributeName, "Error approving timesheet entries: ${e.message}")
             return loadMonthlyReportData(approveRequest.month, approveRequest.projectId, approveRequest.employeeId, null, approveRequest.status, model)
+        }
+    }
+
+    @PostMapping("/add-row")
+    @HxRequest
+    fun addNewRow(
+        @RequestParam weekStart: String,
+        model: Model,
+        response: HttpServletResponse
+    ): String {
+        try {
+            val weekStartDate = LocalDate.parse(weekStart)
+            val user = User().apply { id = user().id }
+            
+            val weeklyTimesheet = timesheetService.getWeeklyTimesheet(user, weekStartDate)
+            val projects = timesheetService.getActiveProjects()
+            val activities = timesheetService.getActiveActivities()
+            
+            if (weeklyTimesheet.approvalStatus == TimesheetStatus.APPROVED.toString()) {
+                response.status = HttpStatus.FORBIDDEN.value()
+                model.addAttribute(errorMessageAttributeName, "Cannot add rows to approved timesheet")
+                return "timesheet/fragments/error-message"
+            }
+            
+            val newRowIndex = weeklyTimesheet.rows.size
+            val newRowId = (weeklyTimesheet.rows.maxOfOrNull { it.rowId } ?: 0) + 1
+            
+            model.addAttribute("projects", projects)
+            model.addAttribute("activities", activities)
+            model.addAttribute("newRowIndex", newRowIndex)
+            model.addAttribute("newRowId", newRowId)
+            model.addAttribute("weekStart", weekStartDate)
+            
+            return "timesheet/fragments/new-timesheet-row"
+            
+        } catch (e: java.time.format.DateTimeParseException) {
+            response.status = HttpStatus.BAD_REQUEST.value()
+            model.addAttribute(errorMessageAttributeName, "Invalid week start date format: $weekStart")
+            return "timesheet/fragments/error-message"
+        } catch (e: Exception) {
+            response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
+            model.addAttribute(errorMessageAttributeName, "Error adding new row: ${e.message}")
+            return "timesheet/fragments/error-message"
         }
     }
 

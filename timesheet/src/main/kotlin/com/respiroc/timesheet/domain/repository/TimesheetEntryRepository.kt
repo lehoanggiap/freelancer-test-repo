@@ -2,7 +2,6 @@ package com.respiroc.timesheet.domain.repository
 
 import com.respiroc.timesheet.domain.model.TimesheetEntry
 import com.respiroc.timesheet.domain.model.TimesheetStatus
-import com.respiroc.tenant.domain.model.Tenant
 import com.respiroc.user.domain.model.User
 import com.respiroc.util.repository.CustomJpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
@@ -15,14 +14,14 @@ import java.time.LocalDate
 interface TimesheetEntryRepository : CustomJpaRepository<TimesheetEntry, Int>, JpaSpecificationExecutor<TimesheetEntry> {
     
     @Query("SELECT t FROM TimesheetEntry t WHERE t.user = :user AND t.entryDate BETWEEN :startDate AND :endDate ORDER BY t.entryDate")
-    fun findByUserAndTenantAndDateRange(
+    fun findByUserAndDateRange(
         @Param("user") user: User,
         @Param("startDate") startDate: LocalDate,
         @Param("endDate") endDate: LocalDate
     ): List<TimesheetEntry>
     
     @Query("SELECT t FROM TimesheetEntry t WHERE t.entryDate BETWEEN :startDate AND :endDate ORDER BY t.entryDate")
-    fun findByTenantAndDateRange(
+    fun findByDateRange(
         @Param("startDate") startDate: LocalDate,
         @Param("endDate") endDate: LocalDate
     ): List<TimesheetEntry>
@@ -52,5 +51,5 @@ interface TimesheetEntryRepository : CustomJpaRepository<TimesheetEntry, Int>, J
     ): List<TimesheetEntry>
     
     @Query("SELECT DISTINCT te.user FROM TimesheetEntry te ORDER BY te.user.email")
-    fun findDistinctUsersByTenant(): List<User>
+    fun findDistinctUsers(): List<User>
 } 

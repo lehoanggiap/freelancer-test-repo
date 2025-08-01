@@ -1,6 +1,6 @@
 package com.respiroc.webapp.controller.request
 
-import com.respiroc.timesheet.application.dto.TimesheetRowDto
+import com.respiroc.timesheet.application.payload.TimesheetRowPayload
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
@@ -21,8 +21,8 @@ data class TimesheetRowRequest(
     val comments: Map<String, String?>,
     val entryIds: Map<String, Int?> = emptyMap()
 ) {
-    fun toDto(): TimesheetRowDto {
-        return TimesheetRowDto(
+    fun toPayload(): TimesheetRowPayload {
+        return TimesheetRowPayload(
             rowId = rowId,
             projectId = projectId,
             activityId = activityId,

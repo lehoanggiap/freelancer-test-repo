@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="error-message" class="r-error-message">
+    <wa-callout variant="danger" th:if="${error}">
+        <wa-icon name="triangle-exclamation" slot="icon"></wa-icon>
+        <strong>Error:</strong>
+        <span th:text="${error}">An error occurred</span>
+    </wa-callout>
+</div>
+
+<div th:fragment="empty-response" class="r-empty-response" style="display: none;">
+</div>
+
+</html>

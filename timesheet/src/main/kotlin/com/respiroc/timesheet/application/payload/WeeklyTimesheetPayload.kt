@@ -1,13 +1,13 @@
-package com.respiroc.timesheet.application.dto
+package com.respiroc.timesheet.application.payload
 
 import java.time.LocalDate
 
-data class WeeklyTimesheetDto(
+data class WeeklyTimesheetPayload(
     val weekStart: LocalDate,
     val weekEnd: LocalDate,
     val weekNumber: Int,
     val year: Int,
-    val rows: List<TimesheetRowDto>,
+    val rows: List<TimesheetRowPayload>,
     val dayTotals: Map<String, Double>,
     val grandTotal: Double,
     val isSubmitted: Boolean = false,

@@ -13,5 +13,5 @@ data class SaveTimesheetRequest(
     @field:NotEmpty(message = "At least one timesheet row is required")
     val rows: List<TimesheetRowRequest>
 ) {
-    fun toTimesheetRowDtos() = rows.map { it.toDto() }
+    fun toTimesheetRowDtos() = rows.map { it.toPayload() }
 }

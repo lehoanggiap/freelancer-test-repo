@@ -1,6 +1,6 @@
-package com.respiroc.timesheet.application.dto
+package com.respiroc.timesheet.application.payload
 
-data class TimesheetRowDto(
+data class TimesheetRowPayload(
     val rowId: Int,
     val projectId: Int?,
     val activityId: Int?,

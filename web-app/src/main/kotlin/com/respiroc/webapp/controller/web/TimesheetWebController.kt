@@ -4,7 +4,6 @@ import com.respiroc.timesheet.application.TimesheetService
 import com.respiroc.user.domain.model.User
 import com.respiroc.tenant.domain.model.Tenant
 import com.respiroc.webapp.controller.BaseController
-import com.respiroc.webapp.controller.request.DeleteTimesheetEntriesRequest
 import com.respiroc.webapp.controller.request.SaveTimesheetRequest
 import com.respiroc.webapp.controller.request.TimesheetRowRequest
 import org.springframework.stereotype.Controller
