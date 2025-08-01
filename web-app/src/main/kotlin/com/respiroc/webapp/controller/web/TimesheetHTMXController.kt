@@ -68,7 +68,7 @@ class TimesheetHTMXController(
             
             val updatedTimesheet = timesheetService.saveTimesheet(
                 user, 
-                saveRequest.toTimesheetRowDtos(),
+                saveRequest.toTimesheetRowPayloads(),
                 saveRequest.weekStart
             )
             
